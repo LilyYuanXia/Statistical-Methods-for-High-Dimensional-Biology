@@ -2,7 +2,9 @@
 
 This is my repo for STAT540, and it includes all the seminar activities, assignments and projects conducted in this course.
 
-:octocat: This course is about
+## About STAT540 
+
+:octocat: This course is about:
 - Exploration, visualization, and quality assessment of high dimensional genomics data
 - Large scale statistical inference
 - Analysis of microarray, RNASeq, and epigenetics data
@@ -22,7 +24,7 @@ This is my repo for STAT540, and it includes all the seminar activities, assignm
 
 Hello! 
 
-I'm Lily, and welcome to my Repo.
+I'm Lily.
 
 Currently, I’m a Biostat student at the University of British Columbia, Vancouver. My interests lie in the area of Biostatistics and Machine Learning. Meanwhile, I am also open to all research area in Statistics.
 
