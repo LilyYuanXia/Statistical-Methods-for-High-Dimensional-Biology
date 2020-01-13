@@ -5,12 +5,12 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: html_document
 ---
 
-```{r echo = FALSE}
+```{r echo = FALSE,message=FALSE, warning=FALSE}
 library(tidyverse)
 ```
 
 ```{r}
-mpg
+mpg %>% DT::datatable() 
 ```
 
 ```{r warning=FALSE}
