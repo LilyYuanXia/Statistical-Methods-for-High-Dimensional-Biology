@@ -1,7 +1,5 @@
 ---
 title: 'Seminar 2a: Introduction to R Markdown'
-author: "Yuan Xia"
-date: "13 January, 2020"
 output: 
   html_document: 
     keep_md: yes
