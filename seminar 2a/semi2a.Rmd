@@ -7,9 +7,15 @@ output:
     keep_md: yes
 ---
 
-```{r,echo = FALSE}
+```{r,echo = FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 ```
+
+### Outlines of Seminar 2a
+  * R code chunk
+  * Basic features
+    * Link
+    * Images
 
 # R code
 R Code can be directly embedded into an .Rmd file and will be executed during rendering. The result of the code would be printed into resulting report.
@@ -17,7 +23,10 @@ R Code can be directly embedded into an .Rmd file and will be executed during re
 summary(cars) %>% knitr::kable()
 ```
 
+# Basic features
 
-# Github Link
+### Link
 [Link return to my GitHub](https://github.com/LilyYuanXia)
 
+### Images
+![](https://i1.wp.com/www.chinatownfoundation.org/wp-content/uploads/2015/05/ubc-logo.png?zoom=2&ssl=1)

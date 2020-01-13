@@ -8,22 +8,12 @@ output:
 ---
 
 
-```
-## ── Attaching packages ──────────── tidyverse 1.2.1 ──
-```
 
-```
-## ✔ ggplot2 3.2.1     ✔ purrr   0.3.2
-## ✔ tibble  2.1.3     ✔ dplyr   0.8.3
-## ✔ tidyr   1.0.0     ✔ stringr 1.4.0
-## ✔ readr   1.3.1     ✔ forcats 0.4.0
-```
-
-```
-## ── Conflicts ─────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-```
+### Outlines of Seminar 2a
+  * R code chunk
+  * Basic features
+    * Link
+    * Images
 
 # R code
 R Code can be directly embedded into an .Rmd file and will be executed during rendering. The result of the code would be printed into resulting report.
@@ -41,7 +31,10 @@ summary(cars) %>% knitr::kable()
      3rd Qu.:19.0   3rd Qu.: 56.00 
      Max.   :25.0   Max.   :120.00 
 
+# Basic features
 
-# Github Link
+### Link
 [Link return to my GitHub](https://github.com/LilyYuanXia)
 
+### Images
+![](https://i1.wp.com/www.chinatownfoundation.org/wp-content/uploads/2015/05/ubc-logo.png?zoom=2&ssl=1)
