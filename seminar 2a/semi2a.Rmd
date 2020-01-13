@@ -1,0 +1,23 @@
+---
+title: 'Seminar 2a: Introduction to R Markdown'
+author: "Yuan Xia"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r,echo = FALSE}
+library(tidyverse)
+```
+
+# R code
+R Code can be directly embedded into an .Rmd file and will be executed during rendering. The result of the code would be printed into resulting report.
+```{r}
+summary(cars) %>% knitr::kable()
+```
+
+
+# Github Link
+[Link return to my GitHub](https://github.com/LilyYuanXia)
+
