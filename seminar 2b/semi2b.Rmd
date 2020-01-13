@@ -2,7 +2,9 @@
 title: 'Seminar 2b: Graphing using ggplot2'
 author: "Yuan Xia"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: html_document
+output: 
+  html_document:
+    keep_md: yes
 ---
 
 ```{r echo = FALSE,message=FALSE, warning=FALSE}
