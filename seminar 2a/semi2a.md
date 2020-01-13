@@ -1,5 +1,5 @@
 ---
-  title: 'Seminar 2a: Introduction to R Markdown'
+title: 'Seminar 2a: Introduction to R Markdown'
 output: 
   html_document
 ---
