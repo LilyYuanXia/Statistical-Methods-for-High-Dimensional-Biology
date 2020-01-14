@@ -2,7 +2,7 @@
 title: 'Seminar 2b: Graphing using ggplot2'
 author: "Yuan Xia"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: html_document
+output: github_document
 ---
 
 ```{r echo = FALSE,message=FALSE, warning=FALSE}
@@ -10,7 +10,7 @@ library(tidyverse)
 ```
 
 ```{r}
-summary(mpg) %>% knitr::kable()
+summary(mpg)
 ```
 
 ```{r warning=FALSE}

@@ -1,8 +1,6 @@
 ---
 title: 'Seminar 2a: Introduction to R Markdown'
-output: 
-  html_document:
-    keep_md: yes
+output: github_document
 ---
 
 ```{r,echo = FALSE, message=FALSE, warning=FALSE}
@@ -18,7 +16,7 @@ library(tidyverse)
 # R code
 R Code can be directly embedded into an .Rmd file and will be executed during rendering. The result of the code would be printed into resulting report.
 ```{r}
-summary(cars) %>% knitr::kable()
+summary(cars)
 ```
 
 # Basic features
