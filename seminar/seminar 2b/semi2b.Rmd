@@ -10,7 +10,7 @@ library(tidyverse)
 ```
 
 ```{r}
-mpg %>% DT::datatable() 
+summary(mpg) %>% knitr::kable()
 ```
 
 ```{r warning=FALSE}
