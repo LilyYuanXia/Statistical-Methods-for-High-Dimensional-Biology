@@ -1,5 +1,7 @@
 Seminar 2a: Introduction to R Markdown
 ================
+Lily Xia
+15 January, 2020
 
 ### Outlines of Seminar 2a
 
@@ -32,7 +34,5 @@ summary(cars)
 
 [Link return to my
 GitHub](https://github.com/LilyYuanXia)
-
-### Images
 
 ![](https://i1.wp.com/www.chinatownfoundation.org/wp-content/uploads/2015/05/ubc-logo.png?zoom=2&ssl=1)

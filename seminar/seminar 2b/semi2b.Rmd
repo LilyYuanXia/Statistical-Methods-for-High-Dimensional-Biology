@@ -1,6 +1,6 @@
 ---
 title: 'Seminar 2b: Graphing using ggplot2'
-author: "Yuan Xia"
+author: "Lily Xia"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: github_document
 ---
@@ -9,9 +9,6 @@ output: github_document
 library(tidyverse)
 ```
 
-```{r}
-summary(mpg)
-```
 
 ```{r warning=FALSE}
 mpg %>% 

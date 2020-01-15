@@ -1,6 +1,10 @@
 ---
 title: 'Seminar 2a: Introduction to R Markdown'
-output: github_document
+author: "Lily Xia"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  github_document:
+  theme: paper
 ---
 
 ```{r,echo = FALSE, message=FALSE, warning=FALSE}
@@ -24,5 +28,4 @@ summary(cars)
 ### Link
 [Link return to my GitHub](https://github.com/LilyYuanXia)
 
-### Images
 ![](https://i1.wp.com/www.chinatownfoundation.org/wp-content/uploads/2015/05/ubc-logo.png?zoom=2&ssl=1)

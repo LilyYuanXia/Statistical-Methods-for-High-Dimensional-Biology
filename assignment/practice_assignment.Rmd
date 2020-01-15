@@ -1,10 +1,8 @@
 ---
 title: "practice_assignment"
+author: "Lily Xia"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
-output: 
-  html_document:
-    toc: TRUE
-    keep_md: yes
+output: github_document
 ---
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -12,6 +10,9 @@ library(tidyverse)
 ```
 
 ## Data inspection with R (2pt)
+```{r}
+dat <- data.frame(Titanic)
+```
 In this question we use dataset `Titanic`. This data set provides information on the fate of passengers on the fatal maiden voyage of the ocean liner ‘Titanic’, summarized according to economic status (class), sex, age and survival.
 
 A 4-dimensional array resulting from cross-tabulating 2201 observations on 4 variables. The variables and their levels are as follows:
@@ -24,29 +25,51 @@ A 4-dimensional array resulting from cross-tabulating 2201 observations on 4 var
 |4|	Survived|	No, Yes|
 
 ### Passenger breakdown
-```{r}
-dat <- data.frame(Titanic)
-table(dat$Age) %>%  knitr::kable()
-table(dat$Sex) %>%  knitr::kable()
-```
 
-There were 16 children and 16 adults, and there were same number of female and male on the Titanic. 
-
-### Survival
-Survival rate is the percentage of people in a group still alive; therefore the survial rate here could be expressed as:
-$$ \text{survial rate} = \frac{\text{number of passengers who survive}}{\text{total number of passengers on the Titanic}} $$
 ```{r}
-survival_rate <- function(data){
-  total <- sum(data$Freq)
-  survived <- sum(data[data$Survived == "Yes",]$Freq)
-  rate <- sum(data[data$Survived == "Yes",]$Freq)/sum(data$Freq)
-  return(c(total, survived, rate))
+# create a function to get total passenger 
+# input : specific dataset 
+# output: total passenger of the dataset
+
+sumfreq <- function(x){
+  sum(x$Freq)
 }
 ```
 
 ```{r, results='hide'}
 children <- dat[dat$Age == "Child",]
 adults <- dat[dat$Age == "Adult",]
+
+sumfreq(children)
+sumfreq(adults)
+
+f_adults <- adults[adults$Sex == "Female",]
+m_adults <- adults[adults$Sex == "Male",]
+sumfreq(f_adults)
+sumfreq(m_adults)
+```
+
+There were 109 children and 2092 adults. Among 2092 adults, 425 of them were female adults and 1667 were male adults, so there were more male adults than female adults.
+
+### Survival
+Survival rate is the percentage of people in a group still alive; therefore the survial rate here could be expressed as:
+$$ \text{survial rate} = \frac{\text{number of passengers who survive}}{\text{total number of passengers on the Titanic}} $$
+```{r}
+# create a function to calculate the survival rate
+# input: sepcific dataset
+# output: total number of passenger in the dataset
+#         total number of survival passenger in the dataset
+#         survival rate
+
+survival_rate <- function(data){
+  total <- sumfreq(data)
+  survived <- sumfreq(data[data$Survived == "Yes",])
+  rate <- sumfreq(data[data$Survived == "Yes",])/sumfreq(data)
+  return(round(c(total, survived, rate),2))
+}
+```
+
+```{r, results='hide'}
 survival_rate(children)
 survival_rate(adults)
 ```
@@ -56,11 +79,14 @@ The survial rates among different age groups are:
 - The total number of chliren on the ship were 109 , and there were 57 survived. The survival rate is $0.52\%$. 
 - The total number of Adult are 2092 , and there were 654 survived. The survival rate is  $0.31\%$.
 
+Thus, children did have better survival rate than the adults.
+
 ```{r, results='hide'}
 first <- dat[dat$Class == "1st",]
 second <- dat[dat$Class == "2nd",]
 thrid <- dat[dat$Class == "3rd",]
 crew <- dat[dat$Class == "Crew",]
+
 survival_rate(first)
 survival_rate(second)
 survival_rate(thrid)
@@ -73,6 +99,8 @@ The survial rates among different classes are:
 - The total number of passenger in 2nd class are 285 , and there were 118 survived. The survival rate is $41\%$. 
 - The total number of passenger in 3rd class on the ship were 706 , and there were only 178 survived. The survival rate is $25\%$. 
 - The total number of passenger in crew are 885 , and there were 212 survived. The survival rate is $24\%$. 
+
+Overall, 1st class class of passengers have a better survival rate.
 
 ## Data visualization (1.5pt)
 We analysis the dataset about the effect of Vitamin C on tooth growth in guinea pigs. The response is the *length of odontoblasts (cells responsible for tooth growth)* in 60 guinea pigs. Each animal received one of three dose levels of vitamin C (0.5, 1, and 2 mg/day) by one of two delivery methods, orange juice or ascorbic acid (a form of vitamin C and coded as VC).
