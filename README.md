@@ -20,6 +20,13 @@ This is my repo for STAT540, and it includes all the seminar activities, assignm
 - [Course repo](https://github.com/STAT540-UBC/STAT540-UBC.github.io)
 - [My repo](https://github.com/LilyYuanXia)
 
+|My work|Course material link|
+|:----------:|:-------------------:|
+|[Seminar 2a](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/seminar/seminar%202a/semi2a.md)| [Introduction to Markdown, Knitr](https://github.com/STAT540-UBC/STAT540-UBC.github.io/blob/master/seminars/seminars_winter_2020/seminar2a/sm2a_intro_to_markdown.md) |
+|[Seminar 2b](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/seminar/seminar%202b/semi2b.md)|[R graphics – ggplot2, lattice](https://github.com/STAT540-UBC/STAT540-UBC.github.io/tree/master//seminars/seminars_winter_2020/seminar2b/sm2b_intro_to_ggplot.md)|
+| [Practice assignment](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/assignment/practice_assignment.md) | [Warm-up](https://github.com/STAT540-UBC/STAT540-UBC.github.io/blob/master/homework/practice_assignment/practice_assignment.md)|
+
+
 ## About Me 
 
 Hello! 
