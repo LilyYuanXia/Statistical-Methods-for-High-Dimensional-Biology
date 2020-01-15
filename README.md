@@ -20,6 +20,7 @@ This is my repo for STAT540, and it includes all the seminar activities, assignm
 - [Course repo](https://github.com/STAT540-UBC/STAT540-UBC.github.io)
 - [My repo](https://github.com/LilyYuanXia)
 
+### Crouse Work Navigation 
 |My work links|Course material links|
 |:----------:|:-------------------:|
 |[Seminar 2a](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/seminar/seminar%202a/semi2a.md)| [Introduction to Markdown, Knitr](https://github.com/STAT540-UBC/STAT540-UBC.github.io/blob/master/seminars/seminars_winter_2020/seminar2a/sm2a_intro_to_markdown.md) |
