@@ -15,7 +15,7 @@ This is my repo for STAT540, and it includes all the seminar activities, assignm
 - Gene function and gene set analysis
 - Resampling and the bootstrap
 
-:pushpin: More course information can be find through:
+:pushpin: More course information can be found through:
 - [Course website](https://stat540-ubc.github.io/index.html)
 - [Course repo](https://github.com/STAT540-UBC/STAT540-UBC.github.io)
 - [My repo](https://github.com/LilyYuanXia)
