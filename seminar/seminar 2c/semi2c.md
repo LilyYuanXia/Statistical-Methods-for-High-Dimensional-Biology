@@ -30,3 +30,6 @@ tibble(x = sampleMeans) %>%
 ```
 
 ![](semi2c_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+When the sample size equal to 5, the simulated 1000 samples’ sampling
+distribution (from chi-square distribution) skews to the right.

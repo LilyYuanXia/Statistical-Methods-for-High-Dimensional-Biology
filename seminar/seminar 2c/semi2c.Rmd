@@ -31,3 +31,4 @@ tibble(x = sampleMeans) %>%
   geom_point(aes(x = x, y = 0), color = "blue", shape = 1, size = 3)
 ```
 
+When the sample size equal to 5, the simulated 1000 samples' sampling distribution (from chi-square distribution) skews to the right.
