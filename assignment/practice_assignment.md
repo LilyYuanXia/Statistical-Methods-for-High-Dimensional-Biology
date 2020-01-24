@@ -1,7 +1,7 @@
 practice\_assignment
 ================
 Lily Xia
-15 January, 2020
+24 January, 2020
 
 ## Data inspection with R (2pt)
 
@@ -56,8 +56,8 @@ adults than female adults.
 ### Survival
 
 Survival rate is the percentage of people in a group still alive;
-therefore the survial rate here could be expressed as:
-\[ \text{survial rate} = \frac{\text{number of passengers who survive}}{\text{total number of passengers on the Titanic}} \]
+therefore the survial rate here could be expressed as: ![ =
+](http://www.sciweavers.org/tex2img.php?eq=%5Ctext%7Bsurvial%20rate%7D%20%3D%20%5Cfrac%7B%5Ctext%7Bnumber%20of%20passengers%20who%20survive%7D%7D%7B%5Ctext%7Btotal%20number%20of%20passengers%20on%20the%20Titanic%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=)
 
 ``` r
 # create a function to calculate the survival rate
