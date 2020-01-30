@@ -48,7 +48,7 @@ new_melted_data <- melted_data %>%
 ```
 
 
-## Part 2 Exercise
+## Part 2 - Exercise
 Modify the above code to also identify the length of each gene captured in the dataset we have been working with in the above exercises. This can be done by adding “transcript_length” as attribute in getBM function. You should end up with an extra column for “transcript length”. We will use this number later.
 ```{r message=FALSE, warning=FALSE}
 #open connection between biomaRt and R. 
@@ -90,14 +90,14 @@ full_data <- left_join(data_with_chromosome, meta_data, by = "Sample")
 full_data2 <- left_join(data_without_length, meta_data, by = "Sample")
 ```
 
-Then we will use dplyr verbs to first group all samples by disease status, filter out *all non-X-chromosome genes*, and then calcualte the mean using summarize().
+Then we will use dplyr verbs to first group all samples by disease status, filter out *all X-chromosome genes*, and then calcualte the mean using summarize().
 ```{r}
 full_data %>% 
     group_by(disease) %>% 
     filter(chromosome_name == "X") %>% 
     summarize(mean = mean(Count))
 ```
-Here the statistical summary changed from (686, 658) to (817,867) after we added "chromosome_length". I think the reason is that before adding the "chromosome_length" there is no rows with same combination of "chromosome_aame" and "hgnc_symbol. However, adding "chromosome_length" also add a different numbers of rows with same combination of "chromosome_name" and "hgnc_symbol". We should use the `weighted.mean()` function where w represent the number of repeated rows with same "chromosome_aame" and "hgnc_symbol" combination.
+Here the statistical summary changed from (686, 658) to (817,867) after we added "transcript_length". I think the reason is that before adding the "transcript_length" there is no rows with same combination of "chromosome_name" and "hgnc_symbol. However, adding "transcript_length" also add a different numbers of rows with same combination of "chromosome_name" and "hgnc_symbol". We should use the `weighted.mean()` function where w represent the number of repeated rows with same "chromosome_aame" and "hgnc_symbol" combination.
 ```{r}
 new_full_data <- full_data %>% 
     filter(chromosome_name == "X") %>% 
@@ -113,7 +113,7 @@ new_full_data %>%
     summarize(mean = weighted.mean(Count,n))
 ```
 
-## Part 3: Graphing expression data
+## Part 3- Graphing expression data
 ```{r}
 #choose random number between 1 and however many genes we have. 
 set.seed(5747540)
@@ -129,12 +129,13 @@ full_data %>%
 
 By adding one additional function to the code above, calculate the sum of all counts in each sample and divide each expression value by that sum (hint: use mutate). Remember, you can add multiple new columns using mutate by separating each column with a comma (i.e mutate(x = c(“a”, “b”), y = c(“d”, “c”))). Plot this new transformed column.
 
+For this question, it faces the same unequal repeats issue. Thus, we just simply use the dataset without "transcript_length".
 ```{r message=FALSE, warning=FALSE}
-full_data %>% 
+(full_data2 %>% 
   filter(hgnc_symbol %in% names_to_choose) %>% 
     group_by(Sample) %>% 
     mutate(Rate = Count/sum(Count)) %>% 
-    mutate(sum_count = sum(Count))
+    mutate(sum_count = sum(Count)))
 ```
 
 ## Part 4 - Analyzing the results of statistical tests
@@ -150,7 +151,7 @@ plotdata %>%
   theme_bw()
 ```
 
-The full_data2 is the dataset without "chomosome_length". From part 2 we have already proved that adding "chomosome_length" will influence the gene expression count mean as there are different numbers of repeated "count" measurement. T-statistics of T-test is based on the sample mean, and if the sample is not accurate then the p-value from t-statistics will also be influenced.
+The full_data2 is the dataset without "transcript_length". From part 2 we have already proved that adding "transcript_length" will influence the gene expression count mean as there are different numbers of repeated "count" measurement. T-statistics of T-test is based on the sample mean, and if the sample is not accurate then the p-value from t-statistics will also be influenced.
 
 ```{r}
 lowest_pvalue <- plotdata %>% 

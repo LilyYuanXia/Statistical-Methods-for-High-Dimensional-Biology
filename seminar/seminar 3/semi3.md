@@ -71,7 +71,7 @@ new_melted_data <- melted_data %>%
     summarize(Count = mean(value))
 ```
 
-## Part 2 Exercise
+## Part 2 - Exercise
 
 Modify the above code to also identify the length of each gene captured
 in the dataset we have been working with in the above exercises. This
@@ -124,8 +124,8 @@ full_data2 <- left_join(data_without_length, meta_data, by = "Sample")
 ```
 
 Then we will use dplyr verbs to first group all samples by disease
-status, filter out *all non-X-chromosome genes*, and then calcualte the
-mean using summarize().
+status, filter out *all X-chromosome genes*, and then calcualte the mean
+using summarize().
 
 ``` r
 full_data %>% 
@@ -141,10 +141,10 @@ full_data %>%
     ## 2 RCC      867.
 
 Here the statistical summary changed from (686, 658) to (817,867) after
-we added “chromosome\_length”. I think the reason is that before adding
-the “chromosome\_length” there is no rows with same combination of
-“chromosome\_aame” and “hgnc\_symbol. However,
-adding”chromosome\_length" also add a different numbers of rows with
+we added “transcript\_length”. I think the reason is that before adding
+the “transcript\_length” there is no rows with same combination of
+“chromosome\_name” and “hgnc\_symbol. However,
+adding”transcript\_length" also add a different numbers of rows with
 same combination of “chromosome\_name” and “hgnc\_symbol”. We should use
 the `weighted.mean()` function where w represent the number of repeated
 rows with same “chromosome\_aame” and “hgnc\_symbol” combination.
@@ -170,7 +170,7 @@ new_full_data %>%
     ## 1 normal   686.
     ## 2 RCC      658.
 
-## Part 3: Graphing expression data
+## Part 3- Graphing expression data
 
 ``` r
 #choose random number between 1 and however many genes we have. 
@@ -193,29 +193,32 @@ sum (hint: use mutate). Remember, you can add multiple new columns using
 mutate by separating each column with a comma (i.e mutate(x = c(“a”,
 “b”), y = c(“d”, “c”))). Plot this new transformed column.
 
+For this question, it faces the same unequal repeats issue. Thus, we
+just simply use the dataset without “transcript\_length”.
+
 ``` r
-full_data %>% 
+(full_data2 %>% 
   filter(hgnc_symbol %in% names_to_choose) %>% 
     group_by(Sample) %>% 
     mutate(Rate = Count/sum(Count)) %>% 
-    mutate(sum_count = sum(Count))
+    mutate(sum_count = sum(Count)))
 ```
 
-    ## # A tibble: 18,683 x 8
+    ## # A tibble: 1,700 x 7
     ## # Groups:   Sample [17]
-    ##    Sample hgnc_symbol Count chromosome_name transcript_leng… disease    Rate
-    ##    <chr>  <chr>       <dbl> <chr>                      <int> <fct>     <dbl>
-    ##  1 GSM11… AFF4         556. 5                           9536 RCC     5.03e-4
-    ##  2 GSM11… AFF4         556. 5                           3348 RCC     5.03e-4
-    ##  3 GSM11… AFF4         556. 5                            897 RCC     5.03e-4
-    ##  4 GSM11… AFF4         556. 5                            430 RCC     5.03e-4
-    ##  5 GSM11… AFF4         556. 5                            513 RCC     5.03e-4
-    ##  6 GSM11… AFF4         556. 5                            728 RCC     5.03e-4
-    ##  7 GSM11… AFF4         556. 5                           1667 RCC     5.03e-4
-    ##  8 GSM11… AFF4         556. 5                           1729 RCC     5.03e-4
-    ##  9 GSM11… AFF4         556. 5                            541 RCC     5.03e-4
-    ## 10 GSM11… AGPAT5       270. 8                           5237 RCC     2.44e-4
-    ## # … with 18,673 more rows, and 1 more variable: sum_count <dbl>
+    ##    Sample   hgnc_symbol Count chromosome_name disease     Rate sum_count
+    ##    <chr>    <chr>       <dbl> <chr>           <fct>      <dbl>     <dbl>
+    ##  1 GSM11815 AFF4         556. 5               RCC     0.00432    128591.
+    ##  2 GSM11815 AGPAT5       270. 8               RCC     0.00210    128591.
+    ##  3 GSM11815 ANKRD18B     310. 9               RCC     0.00241    128591.
+    ##  4 GSM11815 API5         176. 11              RCC     0.00137    128591.
+    ##  5 GSM11815 ARAP1        127. 11              RCC     0.000986   128591.
+    ##  6 GSM11815 ARID2        791. 12              RCC     0.00615    128591.
+    ##  7 GSM11815 ART4         310. 12              RCC     0.00241    128591.
+    ##  8 GSM11815 ASAP1       1922. 8               RCC     0.0149     128591.
+    ##  9 GSM11815 BMPR1A       268. 10              RCC     0.00208    128591.
+    ## 10 GSM11815 C14orf28     403. 14              RCC     0.00313    128591.
+    ## # … with 1,690 more rows
 
 ## Part 4 - Analyzing the results of statistical tests
 
@@ -236,8 +239,8 @@ plotdata %>%
 
 ![](semi3_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
-The full\_data2 is the dataset without “chomosome\_length”. From part 2
-we have already proved that adding “chomosome\_length” will influence
+The full\_data2 is the dataset without “transcript\_length”. From part 2
+we have already proved that adding “transcript\_length” will influence
 the gene expression count mean as there are different numbers of
 repeated “count” measurement. T-statistics of T-test is based on the
 sample mean, and if the sample is not accurate then the p-value from
