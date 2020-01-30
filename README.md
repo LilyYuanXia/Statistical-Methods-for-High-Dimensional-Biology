@@ -27,7 +27,7 @@ This is my repo for STAT540, and it includes all the seminar activities, assignm
 |Jan 17, 2020|[Seminar 2b](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/seminar/seminar%202b/semi2b.md)|[R graphics – ggplot2, lattice](https://github.com/STAT540-UBC/STAT540-UBC.github.io/tree/master//seminars/seminars_winter_2020/seminar2b/sm2b_intro_to_ggplot.md)|
 |Jan 16, 2020| [Practice assignment](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/assignment/practice_assignment.md) | [Warm-up](https://github.com/STAT540-UBC/STAT540-UBC.github.io/blob/master/homework/practice_assignment/practice_assignment.md)|
 |Jan 24, 2020| [Seminar 2c](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/seminar/seminar%202c/semi2c.md) | [Getting your hands dirty with R, probability and simulations](https://github.com/STAT540-UBC/STAT540-UBC.github.io/blob/master/seminars/seminars_winter_2020/seminar2c/sm2c_intro_to_stat.md)|
-|Jan 31, 2020| |[ Data aggregation with dplyr](https://github.com/STAT540-UBC/STAT540-UBC.github.io/blob/master/seminars/seminars_winter_2020/Seminar3/sm03_data_and_dplyr.md)|
+|Jan 31, 2020| [Seminar 3](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/seminar/seminar%203/semi3.md)|[ Data aggregation with dplyr](https://github.com/STAT540-UBC/STAT540-UBC.github.io/blob/master/seminars/seminars_winter_2020/Seminar3/sm03_data_and_dplyr.md)|
 
 
 ## About Me 
