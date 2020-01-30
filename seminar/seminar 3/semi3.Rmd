@@ -1,0 +1,160 @@
+---
+title: "Seminar 3 - Data aggregation with dplyr"
+author: "Yuan Xia"
+date: "27/01/2020"
+output: github_document
+---
+
+```{r message=FALSE, warning=FALSE}
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#    install.packages("BiocManager")
+# 
+# BiocManager::install("GEOquery")
+# BiocManager::install("biomaRt")
+library(GEOquery)
+library(biomaRt)
+library(tidyverse)
+library(data.table)
+library(reshape2)
+```
+
+Load the meta table and gene expression table from GEO
+```{r message=FALSE, warning=FALSE}
+gds <- getGEO("GDS507")
+meta_data <- data.frame(Sample = gds@dataTable@columns$sample, disease = gds@dataTable@columns$disease.state)
+#we grab this info from the appropriate slots above. 
+
+gds_data <- gds@dataTable@table
+```
+
+Explore the gene expression table and melt it from 19 columns to 4 columns.
+```{r message=FALSE, warning=FALSE, results='hide'}
+nrow(gds_data)
+ncol(gds_data)
+melted_data <- melt(gds_data, id.vars = c("ID_REF", "IDENTIFIER"), var = "Sample")
+head(melted_data)
+```
+
+Use dplyr function to modify the table.
+```{r message=FALSE, warning=FALSE}
+melted_data %>% 
+    group_by(Sample) %>% 
+    summarize(mean = mean(value))
+
+
+new_melted_data <- melted_data %>% 
+    group_by(Sample, IDENTIFIER) %>% 
+    summarize(Count = mean(value))
+```
+
+
+## Part 2 Exercise
+Modify the above code to also identify the length of each gene captured in the dataset we have been working with in the above exercises. This can be done by adding “transcript_length” as attribute in getBM function. You should end up with an extra column for “transcript length”. We will use this number later.
+```{r message=FALSE, warning=FALSE}
+#open connection between biomaRt and R. 
+human = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+#function that takes in data frame, and outputs same data frame with associated chromosome annotations.
+identify_gene_names <- function(df){
+    names(df) <- c("Sample", "hgnc_symbol", "Count")
+    names <- getBM(attributes=c("hgnc_symbol", "chromosome_name", "transcript_length"),
+                  filters= "hgnc_symbol", 
+                  values = unique(df$hgnc_symbol), 
+                  mart = human)
+    left_join(df, names, by = "hgnc_symbol")
+}
+data_with_chromosome <- identify_gene_names(new_melted_data) %>% 
+    filter(chromosome_name %in% c(1:23, "X", "Y"))
+
+
+identify_gene_name <- function(df){
+    names(df) <- c("Sample", "hgnc_symbol", "Count")
+    names <- getBM(attributes=c("hgnc_symbol", "chromosome_name"),
+                  filters= "hgnc_symbol", 
+                  values = unique(df$hgnc_symbol), 
+                  mart = human)
+    left_join(df, names, by = "hgnc_symbol")
+}
+
+data_without_length <- identify_gene_name(new_melted_data) %>% 
+    filter(chromosome_name %in% c(1:23, "X", "Y"))
+```
+
+**Aim:** how the average expression of genes on the X chromosome changes between RCC and normal cells.
+
+The first thing we will do is combine information from the meta data file (meta_data) with our expression table (data_with_chromosome). 
+```{r,warning=FALSE}
+#There's a lot of variation in how the chromosomal location is annotated. To simplify things, let's filter out all genes with annotations that are not numeric numbers between 1 and 23, X or Y. 
+
+full_data <- left_join(data_with_chromosome, meta_data, by = "Sample")
+
+full_data2 <- left_join(data_without_length, meta_data, by = "Sample")
+```
+
+Then we will use dplyr verbs to first group all samples by disease status, filter out *all non-X-chromosome genes*, and then calcualte the mean using summarize().
+```{r}
+full_data %>% 
+    group_by(disease) %>% 
+    filter(chromosome_name == "X") %>% 
+    summarize(mean = mean(Count))
+```
+Here the statistical summary changed from (686, 658) to (817,867) after we added "chromosome_length". I think the reason is that before adding the "chromosome_length" there is no rows with same combination of "chromosome_aame" and "hgnc_symbol. However, adding "chromosome_length" also add a different numbers of rows with same combination of "chromosome_name" and "hgnc_symbol". We should use the `weighted.mean()` function where w represent the number of repeated rows with same "chromosome_aame" and "hgnc_symbol" combination.
+```{r}
+new_full_data <- full_data %>% 
+    filter(chromosome_name == "X") %>% 
+    group_by(.dots = c("Sample", 
+                       "hgnc_symbol",
+                       "chromosome_name",
+                       "disease")) %>%
+    mutate(n = 1/n())
+
+new_full_data %>% 
+    group_by(disease) %>% 
+    filter(chromosome_name == "X") %>% 
+    summarize(mean = weighted.mean(Count,n))
+```
+
+## Part 3: Graphing expression data
+```{r}
+#choose random number between 1 and however many genes we have. 
+set.seed(5747540)
+sample_to_choose <- sample(1:length(unique(full_data$hgnc_symbol)), size = 100)
+#choose genes that correspond to those numbers in a list of genes. 
+names_to_choose <- as.character(unique(full_data$hgnc_symbol)[sample_to_choose])
+
+full_data %>% 
+    filter(hgnc_symbol %in% names_to_choose) %>% 
+    group_by(Sample) %>% 
+    ggplot(aes(x = as.factor(chromosome_name), y = Count)) + geom_point()
+```
+
+By adding one additional function to the code above, calculate the sum of all counts in each sample and divide each expression value by that sum (hint: use mutate). Remember, you can add multiple new columns using mutate by separating each column with a comma (i.e mutate(x = c(“a”, “b”), y = c(“d”, “c”))). Plot this new transformed column.
+
+```{r message=FALSE, warning=FALSE}
+full_data %>% 
+  filter(hgnc_symbol %in% names_to_choose) %>% 
+    group_by(Sample) %>% 
+    mutate(Rate = Count/sum(Count)) %>% 
+    mutate(sum_count = sum(Count))
+```
+
+## Part 4 - Analyzing the results of statistical tests
+**Aim:** run statistical tests on the data. we want to identify the genes that are differentially expressed between the normal and RCC samples. We will use summarize() to perform a t-test for each gene.
+```{r}
+plotdata <- full_data2 %>% 
+    group_by(hgnc_symbol) %>% 
+    summarize( pvalue = t.test(Count ~ disease)$p.value)
+
+plotdata %>% 
+  ggplot(aes(pvalue)) +
+  geom_density() +
+  theme_bw()
+```
+
+The full_data2 is the dataset without "chomosome_length". From part 2 we have already proved that adding "chomosome_length" will influence the gene expression count mean as there are different numbers of repeated "count" measurement. T-statistics of T-test is based on the sample mean, and if the sample is not accurate then the p-value from t-statistics will also be influenced.
+
+```{r}
+lowest_pvalue <- plotdata %>% 
+  filter(pvalue < 0.05)
+```
+
+ 
