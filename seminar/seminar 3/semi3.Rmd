@@ -135,7 +135,8 @@ For this question, it faces the same unequal repeats issue. Thus, we just simply
   filter(hgnc_symbol %in% names_to_choose) %>% 
     group_by(Sample) %>% 
     mutate(Rate = Count/sum(Count)) %>% 
-    mutate(sum_count = sum(Count)))
+    mutate(sum_count = sum(Count))) %>% 
+  ggplot(aes(x = as.factor(chromosome_name), y = Rate)) + geom_point()
 ```
 
 ## Part 4 - Analyzing the results of statistical tests
