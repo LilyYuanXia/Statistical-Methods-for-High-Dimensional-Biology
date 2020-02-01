@@ -201,24 +201,11 @@ just simply use the dataset without “transcript\_length”.
   filter(hgnc_symbol %in% names_to_choose) %>% 
     group_by(Sample) %>% 
     mutate(Rate = Count/sum(Count)) %>% 
-    mutate(sum_count = sum(Count)))
+    mutate(sum_count = sum(Count))) %>% 
+  ggplot(aes(x = as.factor(chromosome_name), y = Rate)) + geom_point()
 ```
 
-    ## # A tibble: 1,700 x 7
-    ## # Groups:   Sample [17]
-    ##    Sample   hgnc_symbol Count chromosome_name disease     Rate sum_count
-    ##    <chr>    <chr>       <dbl> <chr>           <fct>      <dbl>     <dbl>
-    ##  1 GSM11815 AFF4         556. 5               RCC     0.00432    128591.
-    ##  2 GSM11815 AGPAT5       270. 8               RCC     0.00210    128591.
-    ##  3 GSM11815 ANKRD18B     310. 9               RCC     0.00241    128591.
-    ##  4 GSM11815 API5         176. 11              RCC     0.00137    128591.
-    ##  5 GSM11815 ARAP1        127. 11              RCC     0.000986   128591.
-    ##  6 GSM11815 ARID2        791. 12              RCC     0.00615    128591.
-    ##  7 GSM11815 ART4         310. 12              RCC     0.00241    128591.
-    ##  8 GSM11815 ASAP1       1922. 8               RCC     0.0149     128591.
-    ##  9 GSM11815 BMPR1A       268. 10              RCC     0.00208    128591.
-    ## 10 GSM11815 C14orf28     403. 14              RCC     0.00313    128591.
-    ## # … with 1,690 more rows
+![](semi3_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ## Part 4 - Analyzing the results of statistical tests
 
