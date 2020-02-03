@@ -1,5 +1,5 @@
 ---
-title: "semi4"
+title: "Seminar 4: Differential Expression Analysis"
 author: "Yuan Xia"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: github_document
@@ -223,8 +223,9 @@ changeDirections <- decideTests(interactionFit, p.value = cutoff, method = "glob
   rownames_to_column("gene") %>% 
   as_tibble()
 
+
 # look for down regulation across developmental stages in wt but up regulation in genotypeNrlKO 
-hits <- changeDirections %>% filter(dev_stage4_weeks == 0, `genotypeNrlKO:dev_stage4_weeks` == 0)
+hits <- changeDirections %>% filter(dev_stage4_weeks > 0, `genotypeNrlKO:dev_stage4_weeks` == 0)
 # lets try plotting 5 on this list
 
 expressionDataForHits <- expressionDataForInteractionSamples %>% 
