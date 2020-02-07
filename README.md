@@ -23,6 +23,7 @@ This is my repo for STAT540, and it includes all the seminar activities, assignm
 ### Crouse Work Navigation 
 | Date |My work links|Course material links|
 |:----:|:----------:|:-------------------:|
+｜Jan 06,2020| |[Introduction to Git and GitHub](https://github.com/STAT540-UBC/STAT540-UBC.github.io/tree/master//seminars/seminars_winter_2020/seminar1/sm01_intro_to_git_content.md)|
 |Jan 17, 2020|[Seminar 2a](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/seminar/seminar%202a/semi2a.md)| [Introduction to Markdown, Knitr](https://github.com/STAT540-UBC/STAT540-UBC.github.io/blob/master/seminars/seminars_winter_2020/seminar2a/sm2a_intro_to_markdown.md) |
 |Jan 17, 2020|[Seminar 2b](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/seminar/seminar%202b/semi2b.md)|[R graphics – ggplot2, lattice](https://github.com/STAT540-UBC/STAT540-UBC.github.io/tree/master//seminars/seminars_winter_2020/seminar2b/sm2b_intro_to_ggplot.md)|
 |Jan 16, 2020| [Practice assignment](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/assignment/practice_assignment.md) | [Warm-up](https://github.com/STAT540-UBC/STAT540-UBC.github.io/blob/master/homework/practice_assignment/practice_assignment.md)|
