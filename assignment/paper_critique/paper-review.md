@@ -1,58 +1,64 @@
-paper review
+Paper Review for Gene Expression by Mouse Inner Ear Hair Cells during
+Development
 ================
-Yuan Xia
-19/02/2020
 
-### Goals and findings of the paper.
+### Goals and findings of the paper
 
-Researchers suspect that hereditary deafness is often caused by
-pathogenic variants in hair cell genes. Subsequently, they have
-conducted a RNA-Seq study which explored the gene expression in hair
-cell during mouse inner ear development. different gene expression
-patterns are found in different cell types (hair cells and surrounding
-cells), tissues sourses (cochlea and utricle) and development
-stages(E16, P0, P4 and P7). Additionally, the expression of genes
-critical for mechanotransduction and deafness are founded in hair cell
-which shows the possibility of the discovery of unknown deafness genes
-in hair cells.
+Due to most of congenital deafness cases are caused by gene defects, it
+is important to comprehend gene expression during development. In this
+study researchers have conducted a cell type-sepcific RNA-Seq study
+which explored the gene expression in hair cell during mouse inner ear
+development. High-throughput sequencing (HTS) was used to generate an
+unbiased quantative transcriptome study. Researchers have found that the
+gene expression patterns are highly complexity in different cell types,
+some of genes were found to be preferentially expressed either in hair
+cells (HCs) or surrounding cells (SCs), and some were expressed in both.
+The degree of enrichment for different genes varys among cell types (HCs
+and SCs), tissues(cochlear and utricular) and four development stages.
+They have also found the differences in gene expression among cell types
+and developmental stages and have got insight into candidates of
+deafness gene which are more likely to cause hearing and balance
+disorders if mutated.
 
 ### Datasets, experiments and relevant analysis
 
-1.  Since the hair cells are embedded in sensory epithelium with a
-    variety of other cell types, enzymatic treatment was used to
-    dissociate hair cells from surrounding cells. The FACs technique was
-    used to further purify hair cells using the brighest GFP
-    fluorescence signal to collect hair cells and the lowest
-    fluorescence signal to collect other cells.
+1.  *Cell dissociation and purification:* A transgenic mouse strain
+    under the control of Pou4f3 promoter was used in this study. These
+    mice were from either sex with normal morphology, and normal
+    function. The cochlear and utricular of mice were collected, then
+    enzymatic treatment was used to dissociate hair cells from
+    surrounding cells. Furthermore, FACs technique was used to purify
+    hair cells using the brighest GFP fluorescence signal to collect
+    hair cells and the lowest fluorescence signal to collect other
+    cells.
 
-2.  The dataset contains the expression of 20,207 REfSeq mouse genes
-    from 16 samples with three factors: cell types, tissue sources and
-    developmental stages. The sequencing libraries converted from
-    3’-enriched transcriptome tags that have similar gene length. Gene
-    expression levels were measured using RPKM (Reads Per kilobase of
+2.  *HTS:* The dataset contains the expression of 20,207 REfSeq mouse
+    genes from 16 samples with three factors: cell types, tissue sources
+    and developmental stages. The sequencing libraries converted from
+    3’-enriched transcriptome tags with similar gene lengths. Gene
+    expression levels were normalized using RPKM (Reads Per kilobase of
     thanscript per Milion mapped reads) in log2 scale.
 
-3.  Several data visulization methods were used to find interesting
-    differences between factor levels. FIrstly, Principle component
-    analysis was used to plot the normalized gene expression data though
-    reduceing the number of axes needed to display the important aspects
-    of the data. Secondly, DESeq package was also used to identify
+3.  *Data visualization and comparision:* First, principle component
+    analysis (PCA) was used to plot the normalized gene expression data
+    though reduceing the number of axes needed to display the important
+    aspects of the data. Then, DESeq package was also used to identify
     differentially expressed genes between hair and surrounding cells
-    and cochlear and utricular hair cells. Finally, histograms were used
+    and cochlear and utricular hair cells. Lastly, histograms were used
     to display and compare the normalized number of reads for sepcific
     genes in different cells, tissue sources and devlopment stages.
 
-4.  Fold change(FC) value was used to represent how big the relative
+4.  *Fold change(FC) value* was used to represent how big the relative
     difference is between selected highly enriched hair (GFP+) and
     surrounding cells (GFP-). It is defined as the GFP+/GFP- counts
     ratio.
 
-5.  Flase discovery rate(FDR) was determined using the Benjamini and
+5.  *False discovery rate(FDR)* was determined using the Benjamini and
     Hochberg method. It shows the rate of type I errors in hypothesis
     testing when conducting mutiple comparsions between different gene
     expression across cells, organs and ages.
 
-6.  Hierarchical clustering heat maps were used to show patial and
+6.  *Hierarchical clustering heat maps* were used to show patial and
     temporal expression patterns of genes at various developmetal
     stages. The distance of different genes are defined as correlation
     of two genes across samples, and the centroid linkage method was
@@ -60,13 +66,14 @@ in hair cells.
 
 ### Comments and discussions
 
-This study intented to comprehend the hair cells gene expression
+This study intented to understand the hair cells gene expression
 specific for vestibular and cochlear HCs during mouse development and to
-discover unknown deafness genes. Serval pairwise and multiple
-comparsions were conducted by ploting the data to illustrate different
-gene expression patterns. However, I cannot find their differential
-expression analysis models or any p-values to show statistical
-significance. The analytical mothods are rather simple, and most of
-analysis steps are still at the stage of exploratory data analysis.
-Statistical models are suggested to be used to further confirm the
-findings.
+discover unknown deafness genes. In this study, ograns from different
+individual mouse were collected in order to form a sufficient large
+dataset. Becuase of this, it is impossible to analysis the
+individual-specific gene expression and to take the gene correlation
+within individaul into consideration. Moveover, several pairwise and
+multiple comparsions were conducted by ploting the data to illustrate
+different gene expression patterns. However, I cannot find their
+differential expression analysis models or any p-values to show
+statistical significance.
