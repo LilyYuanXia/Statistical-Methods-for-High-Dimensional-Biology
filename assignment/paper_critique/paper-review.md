@@ -68,12 +68,12 @@ disorders if mutated.
 
 This study intented to understand the hair cells gene expression
 specific for vestibular and cochlear HCs during mouse development and to
-discover unknown deafness genes. In this study, ograns from different
-individual mouse were collected in order to form a sufficient large
-dataset. Becuase of this, it is impossible to analysis the
-individual-specific gene expression and to take the gene correlation
-within individaul into consideration. Moveover, several pairwise and
-multiple comparsions were conducted by ploting the data to illustrate
-different gene expression patterns. However, I cannot find their
-differential expression analysis models or any p-values to show
+discover unknown deafness genes. I found two limitations in this study.
+Firstly, organs from different individuals were collected in order to
+form a sufficient large dataset. Becuase of this, it is impossible to
+analysis the individual-specific gene expression and to take the gene
+correlation within individaul into consideration. Moveover, several
+pairwise and multiple comparsions were conducted by ploting the data to
+illustrate different gene expression patterns. However, I cannot find
+their differential expression analysis models or any p-values to show
 statistical significance.
