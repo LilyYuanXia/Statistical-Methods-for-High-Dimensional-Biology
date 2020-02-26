@@ -118,26 +118,21 @@ pheatmap(topDat, cluster_rows = TRUE, scale = clust_scale, clustering_method = c
 ## Dendrograms for top genes
 
 Regenerate the dendrogram on the samples of this heatmap using the
-hclust and dist functions.
+hclust and dist functions. We use the correlation between genes as
+distance, name the distance as `cor.dis`. Then use the `mcquitty` method
+to find the cluster distance.
 
 ``` r
 data_to_plot = topDat
 # compute pairwise distances
-pr.dis <- dist(t(data_to_plot), method = "euclidean")
+pr.dis <- dist(data_to_plot, method = "euclidean")
 
+co.dis <- as.dist((1 - cor(t(data_to_plot)))/2)
 # compute hierarchical clustering using different linkage types
-pr.hc.s <- hclust(pr.dis, method = "single")
-pr.hc.c <- hclust(pr.dis, method = "complete")
-pr.hc.a <- hclust(pr.dis, method = "average")
-pr.hc.w <- hclust(pr.dis, method = "ward.D")
-
+pr.hc.s <- hclust(co.dis, method = "mcquitty")
 # plot them
-op <- par(mar = c(0, 4, 4, 2), mfrow = c(2, 2))
 
-plot(pr.hc.s, labels = FALSE, main = "Single", xlab = "")
-plot(pr.hc.c, labels = FALSE, main = "Complete", xlab = "")
-plot(pr.hc.a, labels = FALSE, main = "Average", xlab = "")
-plot(pr.hc.w, labels = FALSE, main = "Ward", xlab = "")
+plot(pr.hc.s, labels = FALSE, main = "mcquitty", xlab = "")
 ```
 
 ![](semi6_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
