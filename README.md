@@ -32,6 +32,7 @@ Jan 06,2020| |[Introduction to Git and GitHub](https://github.com/STAT540-UBC/ST
 |Feb 07, 2020|[Seminar 4](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/seminar/seminar%204/semi4.md)|[ Differential Expression Analysis](https://github.com/STAT540-UBC/STAT540-UBC.github.io/blob/master/seminars/seminars_winter_2020/seminar4/sm4_differential_expression_analysis.md)|
 |Feb 20,2020|[paper review](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/assignment/paper_critique/paper-review.md)|[Gene Expression by Mouse Inner Ear Hair Cells during Development](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/assignment/paper_critique/zns6366.pdf)|
 |Feb 28, 2020|[Seminar 6](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/seminar/seminar%206/semi6.md)|[Dimensionality reduction and Cluster Analysis-Hierarchical Clustering](https://github.com/STAT540-UBC/STAT540-UBC.github.io/blob/master/seminars/seminars_winter_2020/seminar6/sm06_clustering-pca.md)|
+|Mar 25, 2020|[Analysis assignment](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/assignment/analysis_assignment/assignment.md)|[Quality Control and Differential Expression Analysis](https://github.com/STAT540-UBC/STAT540-UBC.github.io/blob/master/homework/assignment/stat540_analysis_assignment.md)|
 
 
 ## About Me 
