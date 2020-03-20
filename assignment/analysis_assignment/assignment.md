@@ -214,17 +214,17 @@ rownames(lm_data) <- gene
 log_lm <- log(lm_data)
 ```
 
-The reason that we use logCPM to fit the linear model is because the
-data should satisfy the linear regression model assumption which is
-normality of response/residual. Now we check the model assumption by
-ramdomly select a gene and compare its expression values with and
-without the log transformation.
+The reason that we use logCPM to fit the linear model is that the data
+should satisfy the linear regression model assumption which is normality
+of response/residual. Now we check the model assumption by selecting a
+ramdom gene and compare its expression normality with and without the
+log transformation.
 ![](assignment_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
-Clearly, the log transformation is used to make the linear model fit
-more adequate on this gene expression data. Then we use `Limma` to fit
-the linear model for each gene with cell type, organism part, age and
-the interaction between age and cell type as
+Clearly, the log transformation helps to make the linear model fit more
+adequate on this gene expression data. Then we use `Limma` to fit the
+linear model for each gene with cell type, organism part, age and the
+interaction between age and cell type as
 covariates.
 
 ``` r
@@ -253,7 +253,7 @@ These are the top 10 high-expressed genes selected by `limma` and
 
 ### Q3.3: Interpret model (2 POINTS)
 
-To interprate the linear inference of the gene `Eva1a`, we first fitter
+To interprate the linear inference of the gene `Eva1a`, we first filter
 out the linear estimations of this gene
 
 ``` r
@@ -275,20 +275,19 @@ t(coeff %>%
 Here the reference in this model is surrounding cells and epithelium of
 utricle, the `Eva1a` is more active in surrounding cells, comparing with
 expression in hair cells; more active in spiral organ than epithelium of
-utricle. As mouse ageing, the predicted expression changes of this gene
-are
+utricle. As mouse ageing, the predicted gene expression changes are
 subtle.
 
 ## Question 4: Evaluating the results
 
 ### Q4.1: Quantifying the number of genes differentially expressed (3 POINTS)
 
-Here we use the p-value adjusted method `fdr` that introduced by
-Benjamini & Hochberg, which give strong control of the family-wise error
-rate in multiple pairwise comparisons. Since we want the number of genes
-with adjusted p-value reater than 0.05, we reset the maximum number of
-henes to list as
-14479
+Here we use the p-value adjusted method `fdr` introduced by Benjamini &
+Hochberg, which give strong control of the family-wise error rate in
+multiple pairwise comparisons. Since we want the number of genes with
+adjusted p-value reater than 0.05, we reset the maximum number of genes
+to list as 14479 (total number of
+genes).
 
 ``` r
 dsHits2 <- topTable(dsEbFit, number = 14479, adjust.method = "fdr", p.value = 0.05)
@@ -298,7 +297,7 @@ nrow(dsHits2)
     ## [1] 6364
 
 We find that there are 6364 genes that differentially expressed by cell
-type.
+types.
 
 ### Q4.2: Interpret the interaction term (3 POINTS)
 
