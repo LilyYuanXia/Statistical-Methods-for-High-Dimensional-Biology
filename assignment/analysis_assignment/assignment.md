@@ -176,40 +176,129 @@ table(meta_data$cell_type, meta_data$organism_part) %>% kable()
 | sensory\_hair\_cell |                       5 |                                      5 |
 
 The treatments with the smallest group size are surrounding cell and
-epithelium of utricle combination and sensory hair cell and sensory
-epithelium of spiral organ combination. Now we filter the genes with CPM
-\> 1 in thses two groups and all genes in the rest treatment groups.
+epithelium of utricle combination, sensory hair cell and sensory
+epithelium of spiral organ combination with group size 4. Now we check
+the CPM whether it is greater than 1 for each gene expression value and
+filter the genes with at least as many samples (\>1) as tje smallest
+group size.
+
+We create a function that input the smallest sample size that we have
+function in the previous section and out the genes that have satisfied
+the critieria.
 
 ``` r
 filter_gene <- function(m){
-  r <- meta_data %>% 
-  group_by(organism_part, cell_type) %>% 
-  mutate(treatment_size = n()) %>% 
-  filter(treatment_size == m) %>% 
-  select(sample, cell_type, organism_part)
-  
-  g <- gene_data %>% select(c(gene, r$sample))
-  h <- g[,-1] > 1
-  g$num <- apply(h, 1, function(z)length(z[z == T]))
-  r2 <- g %>% 
-    filter(num > m) %>% 
-    select(gene)
-  dat <- left_join(r2,gene_data,by ="gene")
-  return(dat)
+  temp <- gene_data
+  temp1 <- as.data.frame(gene_data[,-1] > 1)
+  temp$num <- apply(temp1, 1, function(z)length(z[z == T]))
+  temp2 <- temp %>% 
+    filter(num > m)
+  return(temp2)
 }
 
-nrow(filter_gene(4))
+nrow(filter_gene(4)) 
 ```
 
-    ## [1] 10485
+    ## [1] 12336
+
+The number of genes reduced from 14479 to 12336 after filtering.
 
 ### Q3.2 Construct linear model (4 POINTS)
 
+Reformat the data frame to only gene expression data with gene IDs as
+row names.
+
+``` r
+lm_data <- as.data.frame(gene_data[,-1])
+rownames(lm_data) <- gene
+log_lm <- log(lm_data)
+```
+
+The reason that we use logCPM to fit the linear model is because the
+data should satisfy the linear regression model assumption which is
+normality of response/residual. Now we check the model assumption by
+ramdomly select a gene and compare its expression values with and
+without the log transformation.
+![](assignment_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+Clearly, the log transformation is used to make the linear model fit
+more adequate on this gene expression data. Then we use `Limma` to fit
+the linear model for each gene with cell type, organism part, age and
+the interaction between age and cell type as
+covariates.
+
+``` r
+DesMat <- model.matrix(~ cell_type + organism_part + age + age:cell_type, meta_data)
+dsFit <- lmFit(log_lm, DesMat)
+dsEbFit <- eBayes(dsFit)
+dsHits <- topTable(dsEbFit)
+dsHits %>% kable()
+```
+
+|          | cell\_typesensory\_hair\_cell | organism\_partsensory\_epithelium\_of\_spiral\_organ |         age | cell\_typesensory\_hair\_cell.age |     AveExpr |        F | P.Value | adj.P.Val |
+| -------- | ----------------------------: | ---------------------------------------------------: | ----------: | --------------------------------: | ----------: | -------: | ------: | --------: |
+| Tmem255b |                     7.2323527 |                                          \-0.8185087 |   0.0985444 |                       \-0.0413799 |   0.9532364 | 251.2692 |       0 |         0 |
+| Mgat5b   |                     3.0744782 |                                            0.3321432 | \-0.0651029 |                         0.1037309 | \-0.1576954 | 210.0188 |       0 |         0 |
+| Mmp2     |                     0.2728479 |                                          \-0.1094241 |   0.1150436 |                       \-0.1935492 |   2.4860194 | 157.1349 |       0 |         0 |
+| Lhx3     |                     4.3617578 |                                          \-0.1767559 |   0.0112449 |                         0.0770417 |   0.1445746 | 137.2901 |       0 |         0 |
+| Tmem178b |                     3.0773891 |                                            0.1971184 | \-0.0422408 |                         0.0994874 |   2.6297833 | 126.2731 |       0 |         0 |
+| Mreg     |                     4.1004053 |                                            0.3374398 | \-0.1047154 |                         0.0292396 |   6.0963557 | 117.2482 |       0 |         0 |
+| Nrsn1    |                     6.2743535 |                                            0.1622585 |   0.0369123 |                         0.0032845 |   1.4432677 | 110.3550 |       0 |         0 |
+| Grxcr1   |                    10.9210980 |                                          \-0.0969361 |   0.2558461 |                       \-0.2070297 |   2.1141560 | 109.8142 |       0 |         0 |
+| Pifo     |                     4.6345955 |                                          \-0.8199027 |   0.0689524 |                         0.0502691 |   0.0672445 | 108.0919 |       0 |         0 |
+| Trim30d  |                     3.4333587 |                                          \-0.4895052 |   0.2738689 |                       \-0.3068628 | \-1.8239254 | 106.6446 |       0 |         0 |
+
+These are the top 10 high-expressed genes selected by `limma` and
+`eBayes`.
+
 ### Q3.3: Interpret model (2 POINTS)
+
+To interprate the linear inference of the gene `Eva1a`, we first fitter
+out the linear estimations of this gene
+
+``` r
+coeff <- as.data.frame(dsFit$coefficients)
+coeff <- rownames_to_column(coeff)
+t(coeff %>% 
+  filter(gene == "Eva1a")) %>%  kable()
+```
+
+|                                                      |             |
+| :--------------------------------------------------- | :---------- |
+| rowname                                              | Eva1a       |
+| (Intercept)                                          | 2.759541    |
+| cell\_typesensory\_hair\_cell                        | \-3.596564  |
+| organism\_partsensory\_epithelium\_of\_spiral\_organ | 1.384532    |
+| age                                                  | \-0.1458939 |
+| cell\_typesensory\_hair\_cell:age                    | 0.1197279   |
+
+Here the reference in this model is surrounding cells and epithelium of
+utricle, the `Eva1a` is more active in surrounding cells, comparing with
+expression in hair cells; more active in spiral organ than epithelium of
+utricle. As mouse ageing, the predicted expression changes of this gene
+are
+subtle.
 
 ## Question 4: Evaluating the results
 
 ### Q4.1: Quantifying the number of genes differentially expressed (3 POINTS)
+
+Here we use the p-value adjusted method `fdr` that introduced by
+Benjamini & Hochberg, which give strong control of the family-wise error
+rate in multiple pairwise comparisons. Since we want the number of genes
+with adjusted p-value reater than 0.05, we reset the maximum number of
+henes to list as
+14479
+
+``` r
+dsHits2 <- topTable(dsEbFit, number = 14479, adjust.method = "fdr", p.value = 0.05)
+nrow(dsHits2)
+```
+
+    ## [1] 6364
+
+We find that there are 6364 genes that differentially expressed by cell
+type.
 
 ### Q4.2: Interpret the interaction term (3 POINTS)
 
