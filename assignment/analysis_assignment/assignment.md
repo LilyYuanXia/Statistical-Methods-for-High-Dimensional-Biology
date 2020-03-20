@@ -144,7 +144,7 @@ rownames(preDat) <- meta_data$sample
 data_to_plot <- as.dist(1-cor(stdDat))
 data_to_plot <- as.matrix(data_to_plot)
 pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "ward.D2",
-         clustering_distance_cols = "euclidean", show_colnames = T, show_rownames = F, 
+         clustering_distance_cols = "euclidean",
          main = "Clustering heatmap for correlation between samples",
          annotation = preDat)
 ```
@@ -155,7 +155,7 @@ Among all annotations, cell types seems to be the most strongly
 correlated with clusters in gene expression data. Since we cluster the
 correlation between samples, the highly correlated value will have a
 closer distance. The off-diagonal has distance zero in the heatmap.
-`GSM1463878` is the sample whose expression values correlate with the
+`GSM1463872` is the sample whose expression values correlate with the
 samples of the different cell\_type.
 
 ## Question 3: Conducting differential expression analysis
@@ -190,16 +190,16 @@ the critieria.
 filter_gene <- function(m){
   temp <- gene_data
   temp1 <- as.data.frame(gene_data[,-1] > 1)
-  temp$num <- apply(temp1, 1, function(z)length(z[z == T]))
+  temp$num <- apply(temp1, 1, function(z)sum(z))
   temp2 <- temp %>% 
-    filter(num > m)
-  return(temp2)
+    filter(num >= m)
+  return(temp2[,-20])
 }
 
 nrow(filter_gene(4)) 
 ```
 
-    ## [1] 12336
+    ## [1] 12761
 
 The number of genes reduced from 14479 to 12336 after filtering.
 
@@ -209,9 +209,10 @@ Reformat the data frame to only gene expression data with gene IDs as
 row names.
 
 ``` r
-lm_data <- as.data.frame(gene_data[,-1])
-rownames(lm_data) <- gene
-log_lm <- log(lm_data)
+dat <- filter_gene(4)
+lm_data <- as.data.frame(dat[,-1])
+rownames(lm_data) <- dat$gene
+log_lm <- log2(lm_data)
 ```
 
 The reason that we use logCPM to fit the linear model is that the data
@@ -237,16 +238,16 @@ dsHits %>% kable()
 
 |          | cell\_typesensory\_hair\_cell | organism\_partsensory\_epithelium\_of\_spiral\_organ |         age | cell\_typesensory\_hair\_cell.age |     AveExpr |        F | P.Value | adj.P.Val |
 | -------- | ----------------------------: | ---------------------------------------------------: | ----------: | --------------------------------: | ----------: | -------: | ------: | --------: |
-| Tmem255b |                     7.2323527 |                                          \-0.8185087 |   0.0985444 |                       \-0.0413799 |   0.9532364 | 251.2692 |       0 |         0 |
-| Mgat5b   |                     3.0744782 |                                            0.3321432 | \-0.0651029 |                         0.1037309 | \-0.1576954 | 210.0188 |       0 |         0 |
-| Mmp2     |                     0.2728479 |                                          \-0.1094241 |   0.1150436 |                       \-0.1935492 |   2.4860194 | 157.1349 |       0 |         0 |
-| Lhx3     |                     4.3617578 |                                          \-0.1767559 |   0.0112449 |                         0.0770417 |   0.1445746 | 137.2901 |       0 |         0 |
-| Tmem178b |                     3.0773891 |                                            0.1971184 | \-0.0422408 |                         0.0994874 |   2.6297833 | 126.2731 |       0 |         0 |
-| Mreg     |                     4.1004053 |                                            0.3374398 | \-0.1047154 |                         0.0292396 |   6.0963557 | 117.2482 |       0 |         0 |
-| Nrsn1    |                     6.2743535 |                                            0.1622585 |   0.0369123 |                         0.0032845 |   1.4432677 | 110.3550 |       0 |         0 |
-| Grxcr1   |                    10.9210980 |                                          \-0.0969361 |   0.2558461 |                       \-0.2070297 |   2.1141560 | 109.8142 |       0 |         0 |
-| Pifo     |                     4.6345955 |                                          \-0.8199027 |   0.0689524 |                         0.0502691 |   0.0672445 | 108.0919 |       0 |         0 |
-| Trim30d  |                     3.4333587 |                                          \-0.4895052 |   0.2738689 |                       \-0.3068628 | \-1.8239254 | 106.6446 |       0 |         0 |
+| Tmem255b |                    10.4340793 |                                          \-1.1808584 |   0.1421695 |                       \-0.0596986 |   1.3752294 | 260.8039 |       0 |         0 |
+| Mgat5b   |                     4.4355345 |                                            0.4791814 | \-0.0939236 |                         0.1496521 | \-0.2275063 | 220.6566 |       0 |         0 |
+| Mmp2     |                     0.3936364 |                                          \-0.1578656 |   0.1659729 |                       \-0.2792325 |   3.5865678 | 169.5684 |       0 |         0 |
+| Lhx3     |                     6.2926864 |                                          \-0.2550049 |   0.0162230 |                         0.1111477 |   0.2085770 | 140.4815 |       0 |         0 |
+| Tmem178b |                     4.4397341 |                                            0.2843818 | \-0.0609407 |                         0.1435300 |   3.7939753 | 130.0359 |       0 |         0 |
+| Mreg     |                     5.9156344 |                                            0.4868227 | \-0.1510723 |                         0.0421838 |   8.7951822 | 120.9430 |       0 |         0 |
+| Axl      |                   \-0.4543935 |                                            0.2733031 |   0.0658078 |                       \-0.2158131 |   5.1911555 | 113.1285 |       0 |         0 |
+| Nrsn1    |                     9.0519787 |                                            0.2340895 |   0.0532531 |                         0.0047385 |   2.0821951 | 112.0251 |       0 |         0 |
+| Grxcr1   |                    15.7558140 |                                          \-0.1398492 |   0.3691079 |                       \-0.2986807 |   3.0500823 | 111.1860 |       0 |         0 |
+| Pifo     |                     6.6863080 |                                          \-1.1828695 |   0.0994773 |                         0.0725229 |   0.0970134 | 110.1501 |       0 |         0 |
 
 These are the top 10 high-expressed genes selected by `limma` and
 `eBayes`.
@@ -260,23 +261,27 @@ out the linear estimations of this gene
 coeff <- as.data.frame(dsFit$coefficients)
 coeff <- rownames_to_column(coeff)
 t(coeff %>% 
-  filter(gene == "Eva1a")) %>%  kable()
+  filter(rowname == "Eva1a")) %>%  kable()
 ```
 
 |                                                      |             |
 | :--------------------------------------------------- | :---------- |
 | rowname                                              | Eva1a       |
-| (Intercept)                                          | 2.759541    |
-| cell\_typesensory\_hair\_cell                        | \-3.596564  |
-| organism\_partsensory\_epithelium\_of\_spiral\_organ | 1.384532    |
-| age                                                  | \-0.1458939 |
-| cell\_typesensory\_hair\_cell:age                    | 0.1197279   |
+| (Intercept)                                          | 3.981176    |
+| cell\_typesensory\_hair\_cell                        | \-5.188745  |
+| organism\_partsensory\_epithelium\_of\_spiral\_organ | 1.997458    |
+| age                                                  | \-0.2104804 |
+| cell\_typesensory\_hair\_cell:age                    | 0.1727309   |
 
 Here the reference in this model is surrounding cells and epithelium of
 utricle, the `Eva1a` is more active in surrounding cells, comparing with
 expression in hair cells; more active in spiral organ than epithelium of
 utricle. As mouse ageing, the predicted gene expression changes are
-subtle.
+subtle. As age increase by 1 week unit, while hoding all other
+covariatrets constant, the predicted expression level in log2 scale for
+the gene `Eva1a` in the surrounding cells in the epithelium of utricle
+would decrease by
+0.2104804.
 
 ## Question 4: Evaluating the results
 
@@ -286,19 +291,28 @@ Here we use the p-value adjusted method `fdr` introduced by Benjamini &
 Hochberg, which give strong control of the family-wise error rate in
 multiple pairwise comparisons. Since we want the number of genes with
 adjusted p-value reater than 0.05, we reset the maximum number of genes
-to list as 14479 (total number of
+to list as 12761 (total selected number of
 genes).
 
 ``` r
-dsHits2 <- topTable(dsEbFit, number = 14479, adjust.method = "fdr", p.value = 0.05)
+dsHits2 <- topTable(dsEbFit, number = 12761, adjust.method = "fdr", p.value = 0.05)
 nrow(dsHits2)
 ```
 
-    ## [1] 6364
+    ## [1] 6150
 
-We find that there are 6364 genes that differentially expressed by cell
+We find that there are 6150K genes that differentially expressed by cell
 types.
 
 ### Q4.2: Interpret the interaction term (3 POINTS)
+
+An interaction occures when an independent variable has a different
+effect on the outcome depending on then values of another independent
+variable. The interaction term between cell type and age is essentially
+trying to model wether the effect of cell types on expression is
+different for different ages. For a particular gene, a significant
+interaction term with p value less than 0.05 at 0.05 sufnufucance level
+means that the effect of cell types on the gene expression on that
+particular gene is different across ages.
 
 ### Bonus Question (2 POINTS)

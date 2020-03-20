@@ -100,12 +100,12 @@ rownames(preDat) <- meta_data$sample
 data_to_plot <- as.dist(1-cor(stdDat))
 data_to_plot <- as.matrix(data_to_plot)
 pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "ward.D2",
-         clustering_distance_cols = "euclidean", show_colnames = T, show_rownames = F, 
+         clustering_distance_cols = "euclidean",
          main = "Clustering heatmap for correlation between samples",
          annotation = preDat)
 ```
 
-Among all annotations, cell types seems to be the most strongly correlated with clusters in gene expression data. Since we cluster the correlation between samples, the highly correlated value will have a closer distance. The off-diagonal has distance zero in the heatmap. `GSM1463878` is the sample whose expression values correlate with the samples of the different cell_type.
+Among all annotations, cell types seems to be the most strongly correlated with clusters in gene expression data. Since we cluster the correlation between samples, the highly correlated value will have a closer distance. The off-diagonal has distance zero in the heatmap. `GSM1463872` is the sample whose expression values correlate with the samples of the different cell_type.
 
 ## Question 3: Conducting differential expression analysis
 ### Q3.1 Remove lowly expressed genes (3 POINTS)
@@ -121,10 +121,10 @@ We create a function that input the smallest sample size that we have function i
 filter_gene <- function(m){
   temp <- gene_data
   temp1 <- as.data.frame(gene_data[,-1] > 1)
-  temp$num <- apply(temp1, 1, function(z)length(z[z == T]))
+  temp$num <- apply(temp1, 1, function(z)sum(z))
   temp2 <- temp %>% 
-    filter(num > m)
-  return(temp2)
+    filter(num >= m)
+  return(temp2[,-20])
 }
 
 nrow(filter_gene(4)) 
@@ -135,19 +135,20 @@ The number of genes reduced from 14479 to 12336 after filtering.
 ### Q3.2 Construct linear model (4 POINTS)
 Reformat the data frame to only gene expression data with gene IDs as row names.
 ```{r}
-lm_data <- as.data.frame(gene_data[,-1])
-rownames(lm_data) <- gene
-log_lm <- log(lm_data)
+dat <- filter_gene(4)
+lm_data <- as.data.frame(dat[,-1])
+rownames(lm_data) <- dat$gene
+log_lm <- log2(lm_data)
 ```
 The reason that we use logCPM to fit the linear model is that the data should satisfy the linear regression model assumption which is normality of response/residual. Now we check the model assumption by selecting a ramdom gene and compare its expression normality with and without the log transformation.
 ```{r, echo=FALSE}
-set.seed(44)
+set.seed(250)
 gsample <- lm_data[sample(nrow(lm_data),1),]
-log_gsample <- log(gsample)
+log_gsample <- log2(gsample)
 par(mfrow = c(1,2))
 qqnorm(gsample, pch = 1, frame = FALSE, main = "Q_Q plot for origenal data")
 qqline(gsample, lwd = 2)
-qqnorm(log_gsample, pch = 1, frame = FALSE, main = "Q_Q plot for log data")
+qqnorm(log_gsample, pch = 1, frame = FALSE, main = "Q_Q plot for log2 data")
 qqline(log_gsample, lwd = 2)
 ```
 
@@ -168,22 +169,22 @@ To interprate the linear inference of the gene `Eva1a`, we first filter out the 
 coeff <- as.data.frame(dsFit$coefficients)
 coeff <- rownames_to_column(coeff)
 t(coeff %>% 
-  filter(gene == "Eva1a")) %>%  kable()
+  filter(rowname == "Eva1a")) %>%  kable()
 ```
 
-Here the reference in this model is surrounding cells and epithelium of utricle, the `Eva1a` is more active in surrounding cells, comparing with expression in hair cells; more active in spiral organ than epithelium of utricle. As mouse ageing, the predicted gene expression changes are subtle.
+Here the reference in this model is surrounding cells and epithelium of utricle, the `Eva1a` is more active in surrounding cells, comparing with expression in hair cells; more active in spiral organ than epithelium of utricle. As mouse ageing, the predicted gene expression changes are subtle. As age increase by 1 week unit, while hoding all other covariatrets constant, the predicted expression level in log2 scale for the gene `Eva1a` in the surrounding cells in the epithelium of utricle would decrease by 0.2104804.
 
 ## Question 4: Evaluating the results
 ### Q4.1: Quantifying the number of genes differentially expressed (3 POINTS)
-Here we use the p-value adjusted method `fdr` introduced by Benjamini & Hochberg, which give strong control of the family-wise error rate in multiple pairwise comparisons. Since we want the number of genes with adjusted p-value reater than 0.05, we reset the maximum number of genes to list as 14479 (total number of genes).
+Here we use the p-value adjusted method `fdr` introduced by Benjamini & Hochberg, which give strong control of the family-wise error rate in multiple pairwise comparisons. Since we want the number of genes with adjusted p-value reater than 0.05, we reset the maximum number of genes to list as 12761 (total selected number of genes).
 ```{r, message=FALSE,warning=FALSE}
-dsHits2 <- topTable(dsEbFit, number = 14479, adjust.method = "fdr", p.value = 0.05)
+dsHits2 <- topTable(dsEbFit, number = 12761, adjust.method = "fdr", p.value = 0.05)
 nrow(dsHits2)
 ```
-We find that there are 6364 genes that differentially expressed by cell types.
+We find that there are 6150K genes that differentially expressed by cell types.
 
 ### Q4.2: Interpret the interaction term (3 POINTS)
-
+An interaction occures when an independent variable has a different effect on the outcome depending on then values of another independent variable. The interaction term between cell type and age is essentially trying to model wether the effect of cell types on expression is different for different ages. For a particular gene, a significant interaction term with p value less than 0.05 at 0.05 sufnufucance level means that the effect of cell types on the gene expression on that particular gene is different across ages.
 
 ### Bonus Question (2 POINTS)
 
