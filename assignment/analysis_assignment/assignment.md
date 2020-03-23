@@ -133,11 +133,11 @@ we have in boxplot.
 ### Q2.2 How do the samples correlate with one another? (4 POINTS)
 
 We standardize the log2 transformed gene expression value and call it
-`stdDat`. Display `cell_type`, `organism_part`, `age`, `batch` as
+`stdDat`. Display `cell_type`, `oranism_part`, `age`, `batch` as
 annotations.
 
 ``` r
-stdDat <- t(scale(t(log2_gene[,-1])))
+stdDat <- log2_gene[,-1]
 preDat <- as.data.frame(meta_data[, c("cell_type", "organism_part", "age", "batch")])
 rownames(preDat) <- meta_data$sample 
 
@@ -145,7 +145,7 @@ data_to_plot <- as.dist(1-cor(stdDat))
 data_to_plot <- as.matrix(data_to_plot)
 pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "ward.D2",
          clustering_distance_cols = "euclidean",
-         main = "Clustering heatmap for correlation between samples",
+         main = "Heatmap for correlation between samples",
          annotation = preDat)
 ```
 
@@ -307,7 +307,7 @@ types.
 ### Q4.2: Interpret the interaction term (3 POINTS)
 
 An interaction occures when an independent variable has a different
-effect on the outcome depending on then values of another independent
+effect on the outcome depending on the values of another independent
 variable. The interaction term between cell type and age is essentially
 trying to model wether the effect of cell types on expression is
 different for different ages. For a particular gene, a significant
