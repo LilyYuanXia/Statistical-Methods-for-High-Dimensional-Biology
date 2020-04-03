@@ -34,6 +34,14 @@ Jan 06,2020| |[Introduction to Git and GitHub](https://github.com/STAT540-UBC/ST
 |Feb 28, 2020|[Seminar 6](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/seminar/seminar%206/semi6.md)|[Dimensionality reduction and Cluster Analysis-Hierarchical Clustering](https://github.com/STAT540-UBC/STAT540-UBC.github.io/blob/master/seminars/seminars_winter_2020/seminar6/sm06_clustering-pca.md)|
 |Mar 25, 2020|[Analysis assignment](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/assignment/analysis_assignment/assignment.md)|[Quality Control and Differential Expression Analysis](https://github.com/STAT540-UBC/STAT540-UBC.github.io/blob/master/homework/assignment/stat540_analysis_assignment.md)|
 
+### Pancreatic adenocarcinoma (PAAD) Project
+[Group Project Repo](https://github.com/STAT540-UBC/Repo_team_Genome-Surfers_W2020) 
+
+:bar_chart: Main objectives of this project is to identify all genes that are more heavily expressed in PAAD patients that have longer survival time compared to those that have a shorter survival time, and training subjects will be classified into a vital status (alive or dead) using appropriate classification techniques
+
+[Individual project report]()
+
+:page_with_curl:
 
 ## About Me 
 
