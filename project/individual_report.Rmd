@@ -1,0 +1,174 @@
+---
+title: "Individual Report"
+output: github_document
+---
+```{r,echo=FALSE, message=FALSE}
+library(tidyverse)
+library(limma)
+library(pheatmap)
+library(survival)
+```
+
+# Group Project - individual report: 
+
+Survival and Gene Expressions Analysis of Pancreatic adenocarcinoma (PAAD)
+
+## A concise summary of contributions of each group member (1 pts)
+
+Group tasks were divided into five steps, including project topic background information research, Data Dexcrption and Wrangling, Exploratory Data Analysis (EDA), Modeliing Building, and results interpretation. And our group members include Hassan Ali, Simran Samra, Sophia Li and me. Hassian and Simran are from Biology background, and one works in BC cancer and another has experience in Heart Lung Innovation. Sophia and I are from Statistical background. Both of us have strong data analysis coding stills but lack of the experience in analyze high dimensional Genomic data. 
+
+Based on the each member's academic backgroup, Hassan and Simran are assigned to the background information research ("blue task"), on the other hand, Sophia and I mainly focus on the model building ("yellow task"). Data Dexcrption and Wrangling, EDA and results interpretation ("green tasks") were done all together. 
+
+![group tasks](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/project/plot/group%20tasks.png)
+
+"blue task": 
+
+1. research the backgroud of Pancreatic adenocarcinoma (PAAD) and introduce the topic to other group members
+2. evaluate whether group objectives are doable or not
+
+"green task":
+
+1. Data Description and Wrangling: decribe the data variables (gene data and metadata) and sanitize the data
+2. EDA: explore the data without any assumption. For instance, using density plots, boxplots and principal components analysis (PCA) to visualize the data and compare different cohort of subjects. 
+3. Results interpratation: explain the EDA and statistical models outcome and summary analysis limitation
+
+"yellow task":
+
+1. survival analysis
+2. vital status classification
+3. Hypothesis test
+4. Clustering samples and genes
+
+## Your specific contributions and comments (1 pts)
+As mention above, I mainly focus on data cleaning and data analyzing. Besides, I also help to maintain the Github repo. Overall, all tasks worked well but final results interpration and limitation discussion were not as what I expected. From my perspective, having members from genome or biology backgroud could help us not only interprate the results statistically, but also assist us to think the results in different aspects. For example, I know that although our models shows there is no statistical significant between patients' gene expression and vital status, it does not mean there is no association between them. Therefore, In addition to highly expressed genes, I hope I could have more information on what mutational genes we should mainly focus on based on backgroud research. This project is really good hand-on experience to apply the approaches that we have learnt in class and seminars, and it's fun to work with different background students. 
+
+## Answer to one question specific to your project (3 points)
+What is your rationale for mostly analyzing the top 10 genes, and not for instance genes that pass FDR, or some other number of top genes? How do you think this impacted your results?
+
+```{r, echo = F,warning=FALSE, message=FALSE}
+metadata <- read.csv("~/Desktop/git_docs/zz_Xia-Lily_STAT540_2020/project/data/tcga_paad_clinical.csv", header = T)
+toDelete <- seq(0, nrow(metadata), 2)
+metadata <-  metadata[-toDelete, ]
+load("~/Desktop/git_docs/zz_Xia-Lily_STAT540_2020/project/data/tcga_paad.RData")
+genedata <- tcga
+rownames(genedata) <- rownames(tcga)
+colnames(genedata) <- str_sub(colnames(genedata),1,12)
+
+metadata <- metadata %>% select(c(submitter_id, age_at_index, 
+                         year_of_death,year_of_diagnosis, 
+                         days_to_death, vital_status, race, gender, ajcc_pathologic_m, 
+                         ajcc_pathologic_n, 
+                         ajcc_pathologic_t, ajcc_pathologic_stage,
+                         treatment_or_therapy, treatment_type))
+
+DesMat <- model.matrix(~ vital_status, metadata)
+expressionMatrix <- t(scale(t(genedata)))
+dsFit <- lmFit(expressionMatrix, DesMat)
+ebfit <- eBayes(dsFit)
+
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# convert a factor into a numeric variable without loss information
+metadata$year_of_death <- as.numeric(as.character(metadata$year_of_death))
+metadata$year_of_death <- ifelse(is.na(metadata$year_of_death), 2014, metadata$year_of_death)
+
+metadata$year_of_diagnosis <- as.numeric(as.character(metadata$year_of_diagnosis))
+year <- metadata$year_of_death - metadata$year_of_diagnosis
+
+metadata$days_to_death <- as.numeric(as.character(metadata$days_to_death))
+
+# complete the survival time variable (day unit)
+day <- rep(NA,length(metadata$days_to_death))
+for(i in 1:length(metadata$days_to_death)){
+  day[i] <- ifelse(is.na(metadata$days_to_death[i]), year[i]*365, metadata$days_to_death[i])
+}
+metadata$time <- day
+
+metadata <- metadata %>% select(-c(year_of_death, year_of_diagnosis, days_to_death))
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# top 4 genes
+top4 <- rownames(topTable(ebfit, number=4))
+topFour <-  genedata %>% filter(rownames(genedata) %in% top4) 
+rownames(topFour) <- top4
+topFour1 <- t(topFour)
+topFour2 <- rownames_to_column(as.data.frame(topFour1), var = "submitter_id")
+
+meta_gene4 <- right_join(metadata, topFour2, by = "submitter_id")
+
+
+# top 10 genes 
+top10 <- rownames(topTable(ebfit))
+topTen <-  genedata %>% filter(rownames(genedata) %in% top10) 
+rownames(topTen) <- top10
+topTen1 <- t(topTen)
+topTen2 <- rownames_to_column(as.data.frame(topTen1), var = "submitter_id")
+
+meta_gene10 <- right_join(metadata, topTen2, by = "submitter_id")
+
+# suggested mutational signature data (Kras, tp53, cdkn2a and smad4)
+mutgene <- c("KRAS", "TP53", "CDKN2A", "SMAD4")
+mutFour <-  genedata %>% filter(rownames(genedata) %in% mutgene) 
+rownames(mutFour) <- mutgene
+mutFour1 <- t(mutFour)
+mutFour2 <- rownames_to_column(as.data.frame(mutFour1), var = "submitter_id")
+
+meta_mut4 <- right_join(metadata, mutFour2, by = "submitter_id")
+
+```
+
+We find the the top4 genes, suggested mutational signature genes (Kras, tp53, cdkn2a and smad4) and top 10 genes
+
+```{r}
+preDat <- as.data.frame(metadata[, c("vital_status")])
+rownames(preDat) <- metadata$submitter_id 
+
+data_to_plot <- as.dist(1-cor(topFour))
+data_to_plot <- as.matrix(data_to_plot)
+pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "ward.D2",
+         clustering_distance_cols = "euclidean", show_rownames = F, show_colnames = F,
+         main = "Top 4 gene correlation between samples",
+         annotation = preDat)
+```
+
+```{r}
+data_to_plot <- as.dist(1-cor(mutFour))
+data_to_plot <- as.matrix(data_to_plot)
+pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "ward.D2",
+         clustering_distance_cols = "euclidean", show_rownames = F, show_colnames = F,
+         main = "Four mutational genes correlation between samples",
+         annotation = preDat)
+```
+
+```{r}
+data_to_plot <- as.dist(1-cor(topTen))
+data_to_plot <- as.matrix(data_to_plot)
+pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "ward.D2",
+         clustering_distance_cols = "euclidean", show_rownames = F, show_colnames = F,
+         main = "Top 10 gene correlation between samples",
+         annotation = preDat)
+```
+
+```{r}
+# Four mutational genes
+meta_mut4$vital_status <- as.numeric(meta_mut4$vital_status)-1
+
+coxph(Surv(time, vital_status) ~ KRAS + TP53 + CDKN2A + SMAD4, 
+         data = meta_mut4)
+
+# Top 4 gene
+meta_gene4$vital_status <- as.numeric(meta_gene4$vital_status)-1
+
+coxph(Surv(time, vital_status) ~ THBS1 + `CTD-2033D15.2` + NNMT + CREM, 
+         data = meta_gene4)
+
+# Top 10 gene
+meta_gene10$vital_status <- as.numeric(meta_gene10$vital_status)-1
+
+coxph(Surv(time, vital_status) ~ THBS1 + `CTD-2033D15.2` + NNMT + CREM + OLFML2B +
+        CYP1B1 + KCNE4 + ITPRIP + `RP11-21L23.2` + CTGF, 
+         data = meta_gene10)
+```
+
