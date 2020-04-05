@@ -69,119 +69,69 @@ seminars, and it’s fun to work with different background students.
 
 ## Answer to one question specific to your project (3 points)
 
-What is your rationale for mostly analyzing the top 10 genes, and not
-for instance genes that pass FDR, or some other number of top genes? How
-do you think this impacted your results?
-
-We find the the top4 genes, suggested mutational signature genes (Kras,
-tp53, cdkn2a and smad4) and top 10 genes
+**Q: What is your rationale for mostly analyzing the top 10 genes, and
+not for instance genes that pass FDR, or some other number of top genes?
+How do you think this impacted your
+results?**
 
 ``` r
-preDat <- as.data.frame(metadata[, c("vital_status")])
-rownames(preDat) <- metadata$submitter_id 
-
-data_to_plot <- as.dist(1-cor(topFour))
-data_to_plot <- as.matrix(data_to_plot)
-pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "ward.D2",
-         clustering_distance_cols = "euclidean", show_rownames = F, show_colnames = F,
-         main = "Top 4 gene correlation between samples",
-         annotation = preDat)
+(tptb <- toptable(ebfit)) %>% kable()
 ```
 
-![](individual_report_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+|               |       logFC |          t |   P.Value | adj.P.Val |          B |
+| ------------- | ----------: | ---------: | --------: | --------: | ---------: |
+| THBS1         | \-0.3383241 | \-3.121237 | 0.0018009 |  0.999918 | \-2.663375 |
+| NNMT          | \-0.3298341 | \-3.042912 | 0.0023430 |  0.999918 | \-2.774369 |
+| CREM          | \-0.3297327 | \-3.041977 | 0.0023503 |  0.999918 | \-2.775677 |
+| CTD-2033D15.2 | \-0.3257617 | \-3.005341 | 0.0026528 |  0.999918 | \-2.826609 |
+| OLFML2B       | \-0.3223433 | \-2.973805 | 0.0029413 |  0.999918 | \-2.869958 |
+| CYP1B1        | \-0.3207618 | \-2.959214 | 0.0030843 |  0.999918 | \-2.889858 |
+| KCNE4         | \-0.3200521 | \-2.952667 | 0.0031504 |  0.999918 | \-2.898757 |
+| ITPRIP        | \-0.3196528 | \-2.948983 | 0.0031882 |  0.999918 | \-2.903754 |
+| RP11-21L23.2  | \-0.3105856 | \-2.865333 | 0.0041657 |  0.999918 | \-3.015568 |
+| CTGF          | \-0.3079740 | \-2.841239 | 0.0044939 |  0.999918 | \-3.047176 |
 
-``` r
-data_to_plot <- as.dist(1-cor(mutFour))
-data_to_plot <- as.matrix(data_to_plot)
-pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "ward.D2",
-         clustering_distance_cols = "euclidean", show_rownames = F, show_colnames = F,
-         main = "Four mutational genes correlation between samples",
-         annotation = preDat)
-```
+We have analysis a cohort of pancreatic adenocarcinoma (PAAD) patients
+who were diagnosed between 2001 to 2014. There are 177 patients with
+average follow-up 655 days. We consider the latest death as the endpoint
+in the analysis. The patients were between the age of 35-88 years old.
+To identify genes that are more heavily expressed in PAAD patients that
+have longer survival time compared to those that have a shorter survival
+time, we used `limma` and `eBayes` to model the relationship between
+gene expression and vital status.
+
+`lmFit()` function that we used carries out multiple linear regression
+on each gene, where the explanatory variable was *vital\_status*. The
+multiple linear regressions were conducted to evaluate the association
+between gene expression values and patients’ survival situations.
+Meanwhile, since we perform the statistical test on each gene, the
+thdangerouse of multiple testing should be considered. We controled the
+false discovery rate (FDR) using Benjamini Hochberg method, and
+`adj.P.Val` is the BH FDR values given by default.
+
+However, all `adj.P.Val` are the same and close to 1. We’re not getting
+any genes with adjusted p-values below 0.05, meaning that there is no
+genes pass the FDR, and this data set doesn’t provide any differentially
+expressed genes at a FDR threshold of 0.05.
+
+No matter what number of top genes used to analyze, `adj.P.Val` are
+still constant and close to 1. However, an adjusted p-value of 1 doesn’t
+mean there is no differential expression, it just means that this
+particular data set does not show any evidence of differential
+expression. The insufficient quality of the data set might because of
+hidden batch effects obscuring the true effect or other errors that we
+need to find out.
+
+These are the heatmaps for different selected genes correlation between
+samples. Since we cannot access the control cohort, the mutational
+signature genes cannot be detected. The suggested mutational genes are
+`KRAS`, `TP53`, `CDKN2A` and `SMAD4`.
 
 ![](individual_report_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-``` r
-data_to_plot <- as.dist(1-cor(topTen))
-data_to_plot <- as.matrix(data_to_plot)
-pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "ward.D2",
-         clustering_distance_cols = "euclidean", show_rownames = F, show_colnames = F,
-         main = "Top 10 gene correlation between samples",
-         annotation = preDat)
-```
-
 ![](individual_report_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-``` r
-# Four mutational genes
-meta_mut4$vital_status <- as.numeric(meta_mut4$vital_status)-1
+![](individual_report_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
-coxph(Surv(time, vital_status) ~ KRAS + TP53 + CDKN2A + SMAD4, 
-         data = meta_mut4)
-```
-
-    ## Call:
-    ## coxph(formula = Surv(time, vital_status) ~ KRAS + TP53 + CDKN2A + 
-    ##     SMAD4, data = meta_mut4)
-    ## 
-    ##           coef exp(coef) se(coef)      z      p
-    ## KRAS    3.5642   35.3117   1.1086  3.215 0.0013
-    ## TP53    0.6371    1.8910   0.7455  0.855 0.3928
-    ## CDKN2A -1.8455    0.1579   0.8579 -2.151 0.0315
-    ## SMAD4  -0.2044    0.8151   0.3192 -0.640 0.5220
-    ## 
-    ## Likelihood ratio test=15.32  on 4 df, p=0.004081
-    ## n= 176, number of events= 92 
-    ##    (1 observation deleted due to missingness)
-
-``` r
-# Top 4 gene
-meta_gene4$vital_status <- as.numeric(meta_gene4$vital_status)-1
-
-coxph(Surv(time, vital_status) ~ THBS1 + `CTD-2033D15.2` + NNMT + CREM, 
-         data = meta_gene4)
-```
-
-    ## Call:
-    ## coxph(formula = Surv(time, vital_status) ~ THBS1 + `CTD-2033D15.2` + 
-    ##     NNMT + CREM, data = meta_gene4)
-    ## 
-    ##                       coef  exp(coef)   se(coef)      z       p
-    ## THBS1           -9.877e+00  5.136e-05  3.746e+00 -2.637 0.00837
-    ## `CTD-2033D15.2`  1.850e-01  1.203e+00  8.837e-01  0.209 0.83415
-    ## NNMT             6.330e-01  1.883e+00  3.963e-01  1.597 0.11019
-    ## CREM             4.756e-01  1.609e+00  4.491e-01  1.059 0.28961
-    ## 
-    ## Likelihood ratio test=10.47  on 4 df, p=0.03326
-    ## n= 176, number of events= 92 
-    ##    (1 observation deleted due to missingness)
-
-``` r
-# Top 10 gene
-meta_gene10$vital_status <- as.numeric(meta_gene10$vital_status)-1
-
-coxph(Surv(time, vital_status) ~ THBS1 + `CTD-2033D15.2` + NNMT + CREM + OLFML2B +
-        CYP1B1 + KCNE4 + ITPRIP + `RP11-21L23.2` + CTGF, 
-         data = meta_gene10)
-```
-
-    ## Call:
-    ## coxph(formula = Surv(time, vital_status) ~ THBS1 + `CTD-2033D15.2` + 
-    ##     NNMT + CREM + OLFML2B + CYP1B1 + KCNE4 + ITPRIP + `RP11-21L23.2` + 
-    ##     CTGF, data = meta_gene10)
-    ## 
-    ##                       coef  exp(coef)   se(coef)      z       p
-    ## THBS1           -1.171e+01  8.248e-06  4.238e+00 -2.762 0.00574
-    ## `CTD-2033D15.2`  5.356e-01  1.709e+00  5.161e-01  1.038 0.29931
-    ## NNMT            -1.922e+00  1.463e-01  6.242e-01 -3.080 0.00207
-    ## CREM             1.800e+00  6.052e+00  6.229e-01  2.890 0.00385
-    ## OLFML2B          2.807e+00  1.657e+01  1.178e+00  2.382 0.01720
-    ## CYP1B1          -5.478e-01  5.782e-01  7.375e-01 -0.743 0.45761
-    ## KCNE4           -7.426e-01  4.759e-01  5.684e-01 -1.307 0.19136
-    ## ITPRIP           7.117e-01  2.037e+00  5.068e-01  1.404 0.16025
-    ## `RP11-21L23.2`   1.663e-01  1.181e+00  1.533e+00  0.108 0.91361
-    ## CTGF             7.167e-02  1.074e+00  9.337e-01  0.077 0.93881
-    ## 
-    ## Likelihood ratio test=27.37  on 10 df, p=0.002273
-    ## n= 176, number of events= 92 
-    ##    (1 observation deleted due to missingness)
+We can see that the sample clusters might not due to different vital
+status.

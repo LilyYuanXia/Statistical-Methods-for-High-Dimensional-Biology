@@ -7,6 +7,7 @@ library(tidyverse)
 library(limma)
 library(pheatmap)
 library(survival)
+library(knitr)
 ```
 
 # Group Project - individual report: 
@@ -43,7 +44,8 @@ Based on the each member's academic backgroup, Hassan and Simran are assigned to
 As mention above, I mainly focus on data cleaning and data analyzing. Besides, I also help to maintain the Github repo. Overall, all tasks worked well but final results interpration and limitation discussion were not as what I expected. From my perspective, having members from genome or biology backgroud could help us not only interprate the results statistically, but also assist us to think the results in different aspects. For example, I know that although our models shows there is no statistical significant between patients' gene expression and vital status, it does not mean there is no association between them. Therefore, In addition to highly expressed genes, I hope I could have more information on what mutational genes we should mainly focus on based on backgroud research. This project is really good hand-on experience to apply the approaches that we have learnt in class and seminars, and it's fun to work with different background students. 
 
 ## Answer to one question specific to your project (3 points)
-What is your rationale for mostly analyzing the top 10 genes, and not for instance genes that pass FDR, or some other number of top genes? How do you think this impacted your results?
+
+**Q: What is your rationale for mostly analyzing the top 10 genes, and not for instance genes that pass FDR, or some other number of top genes? How do you think this impacted your results?**
 
 ```{r, echo = F,warning=FALSE, message=FALSE}
 metadata <- read.csv("~/Desktop/git_docs/zz_Xia-Lily_STAT540_2020/project/data/tcga_paad_clinical.csv", header = T)
@@ -61,11 +63,11 @@ metadata <- metadata %>% select(c(submitter_id, age_at_index,
                          ajcc_pathologic_t, ajcc_pathologic_stage,
                          treatment_or_therapy, treatment_type))
 
+
 DesMat <- model.matrix(~ vital_status, metadata)
 expressionMatrix <- t(scale(t(genedata)))
 dsFit <- lmFit(expressionMatrix, DesMat)
 ebfit <- eBayes(dsFit)
-
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -89,14 +91,14 @@ metadata <- metadata %>% select(-c(year_of_death, year_of_diagnosis, days_to_dea
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
-# top 4 genes
-top4 <- rownames(topTable(ebfit, number=4))
-topFour <-  genedata %>% filter(rownames(genedata) %in% top4) 
-rownames(topFour) <- top4
-topFour1 <- t(topFour)
-topFour2 <- rownames_to_column(as.data.frame(topFour1), var = "submitter_id")
+# top 5000 genes
+top5000 <- rownames(topTable(ebfit, number=5000))
+topF <-  genedata %>% filter(rownames(genedata) %in% top5000) 
+rownames(topF) <- top5000
+topF1 <- t(topF)
+topF2 <- rownames_to_column(as.data.frame(topF1), var = "submitter_id")
 
-meta_gene4 <- right_join(metadata, topFour2, by = "submitter_id")
+meta_gene5000 <- right_join(metadata, topF2, by = "submitter_id")
 
 
 # top 10 genes 
@@ -119,30 +121,25 @@ meta_mut4 <- right_join(metadata, mutFour2, by = "submitter_id")
 
 ```
 
-We find the the top4 genes, suggested mutational signature genes (Kras, tp53, cdkn2a and smad4) and top 10 genes
+```{r, warning=FALSE, message=FALSE}
+(tptb <- toptable(ebfit)) %>% kable()
+```
 
-```{r}
+We have analysis a cohort of pancreatic adenocarcinoma (PAAD) patients who were diagnosed between 2001 to 2014. There are 177 patients with average follow-up 655 days. We consider the latest death as the endpoint in the analysis. The patients were between the age of 35-88 years old. To identify genes that are more heavily expressed in PAAD patients that have longer survival time compared to those that have a shorter survival time, we used `limma` and `eBayes` to model the relationship between gene expression and vital status.
+
+`lmFit()` function that we used carries out multiple linear regression on each gene, where the explanatory variable was *vital_status*. The multiple linear regressions were conducted to evaluate the association between gene expression values and patients' survival situations. Meanwhile, since we perform the statistical test on each gene, the thdangerouse of multiple testing should be considered. We controled the false discovery rate (FDR) using Benjamini Hochberg method, and `adj.P.Val` is the BH FDR values given by default.
+
+However, all `adj.P.Val` are the same and close to 1. We're not getting any genes with adjusted p-values below 0.05, meaning that there is no genes pass the FDR, and this data set doesn't provide any differentially expressed genes at a FDR threshold of 0.05. 
+
+No matter what number of top genes used to analyze, `adj.P.Val` are still constant and close to 1. However, an adjusted p-value of 1 doesn't mean there is no differential expression, it just means that this particular data set does not show any evidence of differential expression. The insufficient quality of the data set might because of hidden batch effects obscuring the true effect or other errors that we need to find out. 
+
+These are the heatmaps for different selected genes correlation between samples. Since we cannot access the control cohort, the mutational signature genes cannot be detected. The suggested mutational genes are `KRAS`, `TP53`, `CDKN2A` and `SMAD4`. 
+
+```{r, echo=FALSE}
 preDat <- as.data.frame(metadata[, c("vital_status")])
 rownames(preDat) <- metadata$submitter_id 
 
-data_to_plot <- as.dist(1-cor(topFour))
-data_to_plot <- as.matrix(data_to_plot)
-pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "ward.D2",
-         clustering_distance_cols = "euclidean", show_rownames = F, show_colnames = F,
-         main = "Top 4 gene correlation between samples",
-         annotation = preDat)
-```
 
-```{r}
-data_to_plot <- as.dist(1-cor(mutFour))
-data_to_plot <- as.matrix(data_to_plot)
-pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "ward.D2",
-         clustering_distance_cols = "euclidean", show_rownames = F, show_colnames = F,
-         main = "Four mutational genes correlation between samples",
-         annotation = preDat)
-```
-
-```{r}
 data_to_plot <- as.dist(1-cor(topTen))
 data_to_plot <- as.matrix(data_to_plot)
 pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "ward.D2",
@@ -151,14 +148,34 @@ pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "
          annotation = preDat)
 ```
 
-```{r}
+```{r, echo=FALSE} 
+data_to_plot <- as.dist(1-cor(topF))
+data_to_plot <- as.matrix(data_to_plot)
+pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "ward.D2",
+         clustering_distance_cols = "euclidean", show_rownames = F, show_colnames = F,
+         main = "Top 5000 gene correlation between samples",
+         annotation = preDat)
+```
+
+```{r, echo=FALSE}
+data_to_plot <- as.dist(1-cor(mutFour))
+data_to_plot <- as.matrix(data_to_plot)
+pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "ward.D2",
+         clustering_distance_cols = "euclidean", show_rownames = F, show_colnames = F,
+         main = "Four mutational genes correlation between samples",
+         annotation = preDat)
+```
+
+We can see that the sample clusters might not due to different vital status. 
+
+```{r eval=FALSE, include=FALSE, echo=FALSE}
 # Four mutational genes
 meta_mut4$vital_status <- as.numeric(meta_mut4$vital_status)-1
 
 coxph(Surv(time, vital_status) ~ KRAS + TP53 + CDKN2A + SMAD4, 
          data = meta_mut4)
 
-# Top 4 gene
+# Top 5000 gene
 meta_gene4$vital_status <- as.numeric(meta_gene4$vital_status)-1
 
 coxph(Surv(time, vital_status) ~ THBS1 + `CTD-2033D15.2` + NNMT + CREM, 
