@@ -147,7 +147,7 @@ gene expression and vital status.
 on each gene, where the explanatory variable was *vital\_status*. The
 multiple linear regressions were conducted to evaluate the association
 between gene expression values and patients’ survival situations.
-Meanwhile, since we perform the statistical test on each gene, the the
+Meanwhile, since we perform the statistical test on each gene, the
 dangerouse of multiple testing should be considered. We controled the
 false discovery rate (FDR) using Benjamini Hochberg method, and
 `adj.P.Val` is the BH FDR values given by default. We expected limma
