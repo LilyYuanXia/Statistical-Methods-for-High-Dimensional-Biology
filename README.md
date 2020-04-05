@@ -39,7 +39,7 @@ Jan 06,2020| |[Introduction to Git and GitHub](https://github.com/STAT540-UBC/ST
 
 Main objectives of this project is to identify all genes that are more heavily expressed in PAAD patients that have longer survival time compared to those that have a shorter survival time, and training subjects will be classified into a vital status (alive or dead) using appropriate classification techniques
 
-:page_with_curl: [Individual project report]()
+:page_with_curl: [Individual project report](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/project/individual_report.md)
 
 
 
