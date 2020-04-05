@@ -1,7 +1,5 @@
-Individual Report
+Group Project - Individual Report
 ================
-
-# Group Project - individual report:
 
 Survival and Gene Expressions Analysis of Pancreatic adenocarcinoma
 (PAAD)
