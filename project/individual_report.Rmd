@@ -41,11 +41,8 @@ Based on the each member's academic backgroup, Hassan and Simran are assigned to
 4. Clustering samples and genes
 
 ## Your specific contributions and comments (1 pts)
-As mention above, I mainly focus on data cleaning and data analyzing. Besides, I also help to maintain the Github repo. Overall, all tasks worked well but final results interpration and limitation discussion were not as what I expected. From my perspective, having members from genome or biology backgroud could help us not only interprate the results statistically, but also assist us to think the results in different aspects. For example, I know that although our models shows there is no statistical significant between patients' gene expression and vital status, it does not mean there is no association between them. Therefore, In addition to highly expressed genes, I hope I could have more information on what mutational genes we should mainly focus on based on backgroud research. This project is really good hand-on experience to apply the approaches that we have learnt in class and seminars, and it's fun to work with different background students. 
 
-## Answer to one question specific to your project (3 points)
-
-**Q: What is your rationale for mostly analyzing the top 10 genes, and not for instance genes that pass FDR, or some other number of top genes? How do you think this impacted your results?**
+As the Division of Labor mentioned above, I mainly focused on data cleaning and data analyzing. Besides, I also helped to maintain the Github repo. Overall, all tasks worked well but final results interpration and limitation discussion were not as what I expected. From my perspective, having members from genome or biology backgroud could help us not only explane the results from statistically, but also assist us to think the results in different aspects. For example, although our models shows there is no statistical significant between patients' gene expression and vital status, it does not mean there is no association between them. Therefore, In addition to highly expressed genes, I hope I could have more information on what mutational genes we should mainly focus on based on backgroud research. This project provides us a really good hand-on experience to apply the approaches that we have learnt in class and seminars. It was also fun to work with different background students. 
 
 ```{r, echo = F,warning=FALSE, message=FALSE}
 metadata <- read.csv("~/Desktop/git_docs/zz_Xia-Lily_STAT540_2020/project/data/tcga_paad_clinical.csv", header = T)
@@ -121,6 +118,39 @@ meta_mut4 <- right_join(metadata, mutFour2, by = "submitter_id")
 
 ```
 
+```{r, echo=FALSE}
+dat2 <- meta_gene10 %>% drop_na()
+dat2$vital_status <- as.numeric(dat2$vital_status)-1
+```
+
+```{r}
+fit <- coxph(formula = Surv(time, vital_status) ~ THBS1 + NNMT + CREM + 
+    OLFML2B, data = dat2)
+summary(fit)
+```
+
+I found that increaseing the expression value of `THBS1`, `NNMT` will decrease the log hazard ratio (longer survival time) by 10.53 and 1.875 respectively, but if increase the expression value of `CREM` and `OLFML2B`, then log hazard ratio will  increase 1.647 and 2.500 respectively. The Cox model diagnostics was performed as follow: We use Martingale residual plot to check the functional form of the covariates in the Cox model. A approximate straight line in each plot indicates that a linear form is needed. We also check the constancy of the coefficients using Schoenfeld residual against a nonlinear scale of time with spline smoother.
+
+```{r, echo=FALSE}
+par(mfrow = c(2,2))
+scatter.smooth(dat2$THBS1, residuals(fit), main ="residual plot",
+               ylab = "martingale residuals", xlab = "THBS1 expression")
+scatter.smooth(dat2$NNMT, residuals(fit), main ="residual plot",
+               ylab = "martingale residuals", xlab = "NNMT expression")
+scatter.smooth(dat2$CREM, residuals(fit), main ="residual plot",
+               ylab = "martingale residuals", xlab = "CREM expression")
+scatter.smooth(dat2$OLFML2B, residuals(fit), main ="residual plot",
+               ylab = "martingale residuals", xlab = "OLFML2B expression")
+
+par(mfrow = c(2,2))
+plot(cox.zph(fit))
+```
+
+## Answer to one question specific to your project (3 points)
+
+**Q: What is your rationale for mostly analyzing the top 10 genes, and not for instance genes that pass FDR, or some other number of top genes? How do you think this impacted your results?**
+
+
 ```{r, warning=FALSE, message=FALSE}
 (tptb <- toptable(ebfit)) %>% kable()
 ```
@@ -167,34 +197,6 @@ These are the heatmaps for different selected genes correlation between samples.
 No matter what number of top genes used to analyze, `adj.P.Val` are still constant and close to 1. However, an adjusted p-value of 1 doesn't mean there is no differential expression, it just means that this particular data set does not show any evidence of differential expression. The insufficient quality of the data set might because of hidden batch effects obscuring the true effect or other errors that we need to figure out. 
 
 The rationale for mostly analyzing the top 10 genes is not because the target genes are 100 percent included in such a small range. But we thought our first step of finding the evidence of differential expression among 44,084 genes should start from the highly expressed genes. Furthermore, we are not able to handle the full set of genes in survival analysis, so top 10 genes maybe a good start. We use `step()` function based on Akaike Information Criterion (AIC) to further select genes in the top10, and fit the Cox porportional hazard model.
-
-```{r, echo=FALSE}
-dat2 <- meta_gene10 %>% drop_na()
-dat2$vital_status <- as.numeric(dat2$vital_status)-1
-```
-
-```{r}
-fit <- coxph(formula = Surv(time, vital_status) ~ THBS1 + NNMT + CREM + 
-    OLFML2B, data = dat2)
-summary(fit)
-```
-
-We found that increaseing the expression value of `THBS1`, `NNMT` will decrease the log hazard ratio (longer survival time) by 10.53 and 1.875 respectively, but if increase the expression value of `CREM` and `OLFML2B`, then log hazard ratio will  increase 1.647 and 2.500 respectively. The Cox model diagnostics was performed as follow: We use Martingale residual plot to check the functional form of the covariates in the Cox model. A approximate straight line in each plot indicates that a linear form is needed. We also check the constancy of the coefficients using Schoenfeld residual against a nonlinear scale of time with spline smoother.
-
-```{r, echo=FALSE}
-par(mfrow = c(2,2))
-scatter.smooth(dat2$THBS1, residuals(fit), main ="residual plot",
-               ylab = "martingale residuals", xlab = "THBS1 expression")
-scatter.smooth(dat2$NNMT, residuals(fit), main ="residual plot",
-               ylab = "martingale residuals", xlab = "NNMT expression")
-scatter.smooth(dat2$CREM, residuals(fit), main ="residual plot",
-               ylab = "martingale residuals", xlab = "CREM expression")
-scatter.smooth(dat2$OLFML2B, residuals(fit), main ="residual plot",
-               ylab = "martingale residuals", xlab = "OLFML2B expression")
-
-par(mfrow = c(2,2))
-plot(cox.zph(fit))
-```
 
 
 
