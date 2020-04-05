@@ -127,13 +127,9 @@ meta_mut4 <- right_join(metadata, mutFour2, by = "submitter_id")
 
 We have analysis a cohort of pancreatic adenocarcinoma (PAAD) patients who were diagnosed between 2001 to 2014. There are 177 patients with average follow-up 655 days. We consider the latest death as the endpoint in the analysis. The patients were between the age of 35-88 years old. To identify genes that are more heavily expressed in PAAD patients that have longer survival time compared to those that have a shorter survival time, we used `limma` and `eBayes` to model the relationship between gene expression and vital status.
 
-`lmFit()` function that we used carries out multiple linear regression on each gene, where the explanatory variable was *vital_status*. The multiple linear regressions were conducted to evaluate the association between gene expression values and patients' survival situations. Meanwhile, since we perform the statistical test on each gene, the thdangerouse of multiple testing should be considered. We controled the false discovery rate (FDR) using Benjamini Hochberg method, and `adj.P.Val` is the BH FDR values given by default.
+`lmFit()` function that we used carries out multiple linear regression on each gene, where the explanatory variable was *vital_status*. The multiple linear regressions were conducted to evaluate the association between gene expression values and patients' survival situations. Meanwhile, since we perform the statistical test on each gene, the the dangerouse of multiple testing should be considered. We controled the false discovery rate (FDR) using Benjamini Hochberg method, and `adj.P.Val` is the BH FDR values given by default. We expected limma could narrow down the range of genes.
 
 However, all `adj.P.Val` are the same and close to 1. We're not getting any genes with adjusted p-values below 0.05, meaning that there is no genes pass the FDR, and this data set doesn't provide any differentially expressed genes at a FDR threshold of 0.05. 
-
-No matter what number of top genes used to analyze, `adj.P.Val` are still constant and close to 1. However, an adjusted p-value of 1 doesn't mean there is no differential expression, it just means that this particular data set does not show any evidence of differential expression. The insufficient quality of the data set might because of hidden batch effects obscuring the true effect or other errors that we need to find out. 
-
-These are the heatmaps for different selected genes correlation between samples. Since we cannot access the control cohort, the mutational signature genes cannot be detected. The suggested mutational genes are `KRAS`, `TP53`, `CDKN2A` and `SMAD4`. 
 
 ```{r, echo=FALSE}
 preDat <- as.data.frame(metadata[, c("vital_status")])
@@ -166,26 +162,95 @@ pheatmap(data_to_plot, cluster_rows = T, scale =  "none" , clustering_method = "
          annotation = preDat)
 ```
 
-We can see that the sample clusters might not due to different vital status. 
+These are the heatmaps for different selected genes correlation between samples. Since we cannot access the control cohort, the mutational signature genes cannot be detected. The suggested mutational genes are `KRAS`, `TP53`, `CDKN2A` and `SMAD4`. We can see that the shown sample clusters in all heatmaps might not due to different vital status.
+
+No matter what number of top genes used to analyze, `adj.P.Val` are still constant and close to 1. However, an adjusted p-value of 1 doesn't mean there is no differential expression, it just means that this particular data set does not show any evidence of differential expression. The insufficient quality of the data set might because of hidden batch effects obscuring the true effect or other errors that we need to figure out. 
+
+The rationale for mostly analyzing the top 10 genes is not because the target genes are 100 percent included in such a small range. But we thought our first step of finding the evidence of differential expression among 44,084 genes should start from the highly expressed genes. Furthermore, we are not able to handle the full set of genes in survival analysis, so top 10 genes maybe a good start. We use `step()` function based on Akaike Information Criterion (AIC) to further select genes in the top10, and fit the Cox porportional hazard model.
+
+```{r, echo=FALSE}
+dat2 <- meta_gene10 %>% drop_na()
+dat2$vital_status <- as.numeric(dat2$vital_status)-1
+```
+
+```{r}
+fit <- coxph(formula = Surv(time, vital_status) ~ THBS1 + NNMT + CREM + 
+    OLFML2B, data = dat2)
+summary(fit)
+```
+
+We found that increaseing the expression value of `THBS1`, `NNMT` will decrease the log hazard ratio (longer survival time) by 10.53 and 1.875 respectively, but if increase the expression value of `CREM` and `OLFML2B`, then log hazard ratio will  increase 1.647 and 2.500 respectively. The Cox model diagnostics was performed as follow: We use Martingale residual plot to check the functional form of the covariates in the Cox model. A approximate straight line in each plot indicates that a linear form is needed. We also check the constancy of the coefficients using Schoenfeld residual against a nonlinear scale of time with spline smoother.
+
+```{r, echo=FALSE}
+par(mfrow = c(2,2))
+scatter.smooth(dat2$THBS1, residuals(fit), main ="residual plot",
+               ylab = "martingale residuals", xlab = "THBS1 expression")
+scatter.smooth(dat2$NNMT, residuals(fit), main ="residual plot",
+               ylab = "martingale residuals", xlab = "NNMT expression")
+scatter.smooth(dat2$CREM, residuals(fit), main ="residual plot",
+               ylab = "martingale residuals", xlab = "CREM expression")
+scatter.smooth(dat2$OLFML2B, residuals(fit), main ="residual plot",
+               ylab = "martingale residuals", xlab = "OLFML2B expression")
+
+par(mfrow = c(2,2))
+plot(cox.zph(fit))
+```
+
+
 
 ```{r eval=FALSE, include=FALSE, echo=FALSE}
-# Four mutational genes
-meta_mut4$vital_status <- as.numeric(meta_mut4$vital_status)-1
+# Top 10 gene
+dat2 <- meta_gene10 %>% drop_na()
+dat2$vital_status <- as.numeric(dat2$vital_status)-1
 
-coxph(Surv(time, vital_status) ~ KRAS + TP53 + CDKN2A + SMAD4, 
-         data = meta_mut4)
+fit2 <- coxph(Surv(time, vital_status) ~ THBS1 + `CTD-2033D15.2` + NNMT + CREM + OLFML2B + CYP1B1 + KCNE4 + ITPRIP + `RP11-21L23.2` + CTGF ,
+         data = dat2)
+
+step(fit2)
+
+fit <- coxph(formula = Surv(time, vital_status) ~ THBS1 + NNMT + CREM + 
+    OLFML2B, data = dat2)
+summary(fit)
+
+par(mfrow = c(2,2))
+scatter.smooth(dat2$THBS1, residuals(fit), main ="residual plot",
+               ylab = "martingale residuals", xlab = "THBS1 expression")
+scatter.smooth(dat2$NNMT, residuals(fit), main ="residual plot",
+               ylab = "martingale residuals", xlab = "NNMT expression")
+scatter.smooth(dat2$CREM, residuals(fit), main ="residual plot",
+               ylab = "martingale residuals", xlab = "CREM expression")
+scatter.smooth(dat2$OLFML2B, residuals(fit), main ="residual plot",
+               ylab = "martingale residuals", xlab = "OLFML2B expression")
+
+par(mfrow = c(2,2))
+plot(cox.zph(fit))
 
 # Top 5000 gene
-meta_gene4$vital_status <- as.numeric(meta_gene4$vital_status)-1
+dat3 <- meta_gene5000 %>% drop_na()
+dat3$vital_status <- as.numeric(dat3$vital_status)-1
 
-coxph(Surv(time, vital_status) ~ THBS1 + `CTD-2033D15.2` + NNMT + CREM, 
-         data = meta_gene4)
+fit3 <- coxph(Surv(time, vital_status) ~ THBS1 + `CTD-2033D15.2` + NNMT + CREM + OLFML2B + CYP1B1 + KCNE4 + ITPRIP + `RP11-21L23.2` + CHSY1 + LUM + MEST + CYTL1 + MGP + PCDHB7 + OLFML1, data = dat3)
 
-# Top 10 gene
-meta_gene10$vital_status <- as.numeric(meta_gene10$vital_status)-1
+step(fit3)
 
-coxph(Surv(time, vital_status) ~ THBS1 + `CTD-2033D15.2` + NNMT + CREM + OLFML2B +
-        CYP1B1 + KCNE4 + ITPRIP + `RP11-21L23.2` + CTGF, 
-         data = meta_gene10)
+# Four mutational genes
+dat1 <- meta_mut4 %>% drop_na()
+dat1$vital_status <- as.numeric(dat1$vital_status)-1
+
+fit1 <- coxph(Surv(time, vital_status) ~ KRAS + TP53 + CDKN2A + SMAD4, data = dat1)
+summary(fit1)
+
+par(mfrow = c(2,2))
+scatter.smooth(dat1$KRAS, residuals(fit1), main ="residual plot",
+               ylab = "martingale residuals", xlab = "KRAS expression")
+scatter.smooth(dat1$TP53, residuals(fit1), main ="residual plot",
+               ylab = "martingale residuals", xlab = "TP53 expression")
+scatter.smooth(dat1$CDKN2A, residuals(fit1), main ="residual plot",
+               ylab = "martingale residuals", xlab = "CDKN2A expression")
+scatter.smooth(dat1$SMAD4, residuals(fit1), main ="residual plot",
+               ylab = "martingale residuals", xlab = "SMAD4 expression")
+
+par(mfrow = c(2,2))
+plot(cox.zph(fit1))
 ```
 
