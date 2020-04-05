@@ -51,7 +51,7 @@ tasks](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/proje
 ## Your specific contributions and comments (1 pts)
 
 As the division of labor mentioned above, I mainly focused on data
-cleaning and data modeling. Besides, I also helped to maintain the
+cleaning and data analyzing such as survival analysis, clustering, hyposthesis testings and PCA. Besides, I also helped to maintain the
 Github repo. Overall, all tasks worked well but final results
 interpration and limitation discussion were not as what I expected. From
 my perspective, having members from genome or biology backgroud could
