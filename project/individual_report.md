@@ -50,19 +50,19 @@ tasks](https://github.com/STAT540-UBC/zz_Xia-Lily_STAT540_2020/blob/master/proje
 
 ## Your specific contributions and comments (1 pts)
 
-As the Division of Labor mentioned above, I mainly focused on data
-cleaning and data analyzing. Besides, I also helped to maintain the
+As the division of labor mentioned above, I mainly focused on data
+cleaning and data modeling. Besides, I also helped to maintain the
 Github repo. Overall, all tasks worked well but final results
 interpration and limitation discussion were not as what I expected. From
 my perspective, having members from genome or biology backgroud could
-help us not only explane the results from statistically, but also assist
+help us not only explane the results statistically, but also assists
 us to think the results in different aspects. For example, although our
 models shows there is no statistical significant between patients’ gene
 expression and vital status, it does not mean there is no association
-between them. Therefore, In addition to highly expressed genes, I hope I
-could have more information on what mutational genes we should mainly
-focus on based on backgroud research. This project provides us a really
-good hand-on experience to apply the approaches that we have learnt in
+between them. Therefore, Besides using highly expressed genes, I hope I
+could have more information on what genes we should mainly focus on based on backgroud research. 
+
+This project provides us a really good hand-on experience to apply the approaches that we have learnt in
 class and seminars. It was also fun to work with different background
 students.
 
