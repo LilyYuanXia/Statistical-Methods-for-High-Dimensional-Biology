@@ -55,8 +55,7 @@ cleaning and data modeling. Besides, I also helped to maintain the
 Github repo. Overall, all tasks worked well but final results
 interpration and limitation discussion were not as what I expected. From
 my perspective, having members from genome or biology backgroud could
-help us not only explane the results statistically, but also assists
-us to think the results in different aspects. For example, although our
+help us explain the results in different aspects. For example, although our
 models shows there is no statistical significant between patients’ gene
 expression and vital status, it does not mean there is no association
 between them. Therefore, Besides using highly expressed genes, I hope I
